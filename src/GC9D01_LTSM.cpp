@@ -2,6 +2,7 @@
 	@file   GC9D01_LTSM.cpp
 	@author Gavin Lyons
 	@brief  Source file. Contains driver methods for GC9D01_LTSM display 
+	@todo invert, rotation, scroll ,power modes,brightness,software reset,setpower mode
 */
 
 #include "GC9D01_LTSM.hpp"
@@ -24,7 +25,7 @@ void GC9D01_LTSM::TFTHWSPIInitialize(void){
 */
 void GC9D01_LTSM ::TFTPowerDown(void)
 {
-	TFTenableDisplay(false);
+	//TFTenableDisplay(false);
 	if (_resetPinOn == true) {
 		DISPLAY16_RST_SetLow;
 	}
@@ -46,9 +47,14 @@ void GC9D01_LTSM ::TFTResetPIN() {
 	if (_resetPinOn == false) return;
 	DISPLAY16_RST_SetDigitalOutput;
 	DISPLAY16_RST_SetHigh;
+	//MILLISEC_DELAY(5);
+	//DISPLAY16_RST_SetLow;
+	//MILLISEC_DELAY(20);
+	//DISPLAY16_RST_SetHigh;
+	//MILLISEC_DELAY(150);
 	MILLISEC_DELAY(5);
 	DISPLAY16_RST_SetLow;
-	MILLISEC_DELAY(20);
+	MILLISEC_DELAY(50);
 	DISPLAY16_RST_SetHigh;
 	MILLISEC_DELAY(150);
 }
@@ -118,7 +124,7 @@ void GC9D01_LTSM::TFTGC9D01Initialize()
 	{
 		TFTResetPIN();
 	}else {
-		TFTresetSWDisplay();
+		//TFTresetSWDisplay();
 	}
 	DISPLAY16_DC_SetDigitalOutput;
 	DISPLAY16_DC_SetLow;
@@ -134,20 +140,20 @@ void GC9D01_LTSM::TFTGC9D01Initialize()
 		TFTHWSPIInitialize();
 	}
 		cmdInitSequence();
-		TFTsetRotation(Degrees_0);
+		//TFTsetRotation(Degrees_0);
 }
 
 /*!
 	@brief Toggle the invert mode
 	@param invert true invert off , false invert on
 */
-void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
-	if(invert) {
-		writeCommand(GC9D01_INVOFF);
-	} else {
-		writeCommand(GC9D01_INVON);
-	}
-}
+//void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
+	//if(invert) {
+		//writeCommand(GC9D01_INVOFF);
+	//} else {
+		//writeCommand(GC9D01_INVON);
+	//}
+//}
 
 /*!
 	@brief: change rotation of display.
@@ -157,33 +163,33 @@ void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
 	2 = 180 rotate
 	3 =  270 rotate
 */
-void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
-	uint8_t madctl = 0;
-	switch (mode) {
-		case Degrees_0 :
-			madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::BGR);
-			_width =_widthStartTFT;
-			_height = _heightStartTFT;
-			break;
-		case Degrees_90:
-			madctl = (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
-			_width  =_heightStartTFT;
-			_height = _widthStartTFT;
-			break;
-		case Degrees_180:
-			madctl =(MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::BGR);
-			_width =_widthStartTFT;
-			_height = _heightStartTFT;
-			break;
-		case Degrees_270:
-			madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
-			_width =_heightStartTFT;
-			_height = _widthStartTFT;
-			break;
-	}
-	writeCommand(GC9D01_MADCTL);
-	writeData(madctl);
-}
+//void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
+	//uint8_t madctl = 0;
+	//switch (mode) {
+		//case Degrees_0 :
+			//madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::BGR);
+			//_width =_widthStartTFT;
+			//_height = _heightStartTFT;
+			//break;
+		//case Degrees_90:
+			//madctl = (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
+			//_width  =_heightStartTFT;
+			//_height = _widthStartTFT;
+			//break;
+		//case Degrees_180:
+			//madctl =(MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::BGR);
+			//_width =_widthStartTFT;
+			//_height = _heightStartTFT;
+			//break;
+		//case Degrees_270:
+			//madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
+			//_width =_heightStartTFT;
+			//_height = _widthStartTFT;
+			//break;
+	//}
+	//writeCommand(GC9D01_MADCTL);
+	//writeData(madctl);
+//}
 
 /*!
 	@brief initialise the variables that define the size of the screen
@@ -218,157 +224,389 @@ void  GC9D01_LTSM::TFTSwSpiGpioDelaySet(uint16_t CommDelay){_SWSPIGPIODelay = Co
 */
 void GC9D01_LTSM::cmdInitSequence(void)
 {
-	writeCommand(GC9D01_INREGEN1);
-	writeCommand(GC9D01_INREGEN2);
+	writeCommand(0xFE);
+	writeCommand(0xEF); 
 
-	// Undocumented in datasheet registers
-	writeCommand(0xEB); 
-	writeData(0x14);
-	writeCommand(0x84); 
-	writeData(0x60);
+	writeCommand(0x80);
+	writeData(0xFF);
+
+	writeCommand(0x81);
+	writeData(0xFF);
+
+	writeCommand(0x82);
+	writeData(0xFF);
+
+	writeCommand(0x83);
+	writeData(0xFF);
+
+	writeCommand(0x84);
+	writeData(0xFF); 
+
 	writeCommand(0x85);
-	writeData(0xF7);
+	writeData(0xFF); 
+
 	writeCommand(0x86);
-	writeData(0xFC);
+	writeData(0xFF); 
+
 	writeCommand(0x87);
-	writeData(0x28);
-	writeCommand(0x8E);
-	writeData(0x0F);
-	writeCommand(0x8F);
-	writeData(0xFC);
+	writeData(0xFF);
+
 	writeCommand(0x88);
-	writeData(0x0A);
+	writeData(0xFF);
+
 	writeCommand(0x89);
-	writeData(0x21);
+	writeData(0xFF);
+
 	writeCommand(0x8A);
-	writeData(0x00);
+	writeData(0xFF);
+
 	writeCommand(0x8B);
-	writeData(0x80);
+	writeData(0xFF);
+
 	writeCommand(0x8C);
-	writeData(0x01);
+	writeData(0xFF);
+
 	writeCommand(0x8D);
-	writeData(0x03);
+	writeData(0xFF);
 
-	writeCommand(GC9D01_FUNCTION_CTRL);//0xb6
-	writeData(0x00);
-	writeData(0x00);
-	writeCommand(GC9D01_MADCTL);
-	writeData(MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::BGR); // BGR color filter panel
-	writeCommand(GC9D01_COLMOD);
-	writeData(0x05);  // 16 bits / pixel DBI
+	writeCommand(0x8E);
+	writeData(0xFF); 
 
-	writeCommand(0x90); // Undocumented in datasheet registers
-	uint8_t seqReg90[] = {0x08, 0x08, 0x08, 0x08};
-	spiWriteDataBuffer(seqReg90, sizeof(seqReg90));
+	writeCommand(0x8F);
+	writeData(0xFF); 
 
-	writeCommand(GC9D01_TEWC);
-	writeData(0x01); // Tearing Effect width 
-	writeCommand(0xBD); // Undocumented in datasheet register
-	writeData(0x06);
-	writeCommand(0xBC); // Undocumented in datasheet register
-	writeData(0x00);
-	writeCommand(0xFF); // Undocumented in datasheet register
-	uint8_t seqRegFF[] = {0x60, 0x01, 0x04};
-	spiWriteDataBuffer(seqRegFF, sizeof(seqRegFF));
+	writeCommand(0x3A);
+	writeData(0x05);
 
-	writeCommand(GC9D01_POWER2);
-	writeData(0x48);
-	writeCommand(GC9D01_POWER3);
-	writeData(0x48);
-	writeCommand(GC9D01_POWER4);
-	writeData(0x25);
+	writeCommand(0xEC);
+	writeData(0x01);
 
-	 // Undocumented in datasheet register
-	writeCommand(0xBE);
-	writeData(0x11);
-	writeCommand(0xE1);
-	writeData(0x10);
+	writeCommand(0x74);
+	writeData(0x02);
 	writeData(0x0E);
-	writeCommand(0xDF);
-	uint8_t seqRegDF[] = {0x21, 0x10, 0x02};
-	spiWriteDataBuffer(seqRegDF, sizeof(seqRegDF));
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x00);
 
-	// gamma control sequence
-	writeCommand(GC9D01_GAMMA1);
-	uint8_t seqGamma1_3[] = {0x4b, 0x0f, 0x0A, 0x0B, 0x15, 0x30};
-	spiWriteDataBuffer(seqGamma1_3, sizeof(seqGamma1_3));
-	writeCommand(GC9D01_GAMMA2);
-	uint8_t seqGamma2_4[] = {0x43, 0x70, 0x72, 0x36, 0x37, 0x6f};
-	spiWriteDataBuffer(seqGamma2_4, sizeof(seqGamma2_4));
-	writeCommand(GC9D01_GAMMA3);
-	spiWriteDataBuffer(seqGamma1_3, sizeof(seqGamma1_3));
-	writeCommand(GC9D01_GAMMA4 );
-	spiWriteDataBuffer(seqGamma2_4, sizeof(seqGamma2_4));
-
-	// Undocumented in datasheet register
-	writeCommand(0xED);
-	writeData(0x1B);
-	writeData(0x0B);
-	writeCommand(0xAC);
-	writeData(0x47);
-	writeCommand(0xAE);
-	writeData(0x77);
-	writeCommand(0xCD);
-	writeData(0x63);
-	writeCommand(0x70);
-	uint8_t seqReg70[] = {0x07, 0x09, 0x04, 0x0C, 0x0D, 0x09, 0x07, 0x08, 0x03};
-	spiWriteDataBuffer(seqReg70, sizeof(seqReg70));
-
-	writeCommand(GC9D01_FRAMERATE);
-	writeData(0x34); // 4 dot inversion DINV[3:0] : Set display inversion mode
-
-	// Undocumented in datasheet registers
-	static uint8_t seqReg60[] = {
-		0x38, 0x0B, 0x76, 0x62,0x39, 0xF0, 0x76, 0x62};
-	writeCommand(0x60); 
-	spiWriteDataBuffer(seqReg60, sizeof(seqReg60));
-	static  uint8_t seqReg61[] = {
-		0x38, 0xF6, 0x76, 0x62,0x38, 0xF7, 0x76, 0x62};
-	writeCommand(0x61); 
-	spiWriteDataBuffer(seqReg61, sizeof(seqReg61));
-	static  uint8_t seqReg62[] = {
-		0x38, 0x0D, 0x71, 0xED, 0x76, 0x62,0x38, 0x0F, 0x71, 0xEF, 0x76, 0x62};
-	writeCommand(0x62); 
-	spiWriteDataBuffer(seqReg62, sizeof(seqReg62));
-	static  uint8_t seqReg63[] = {
-		0x38, 0x11, 0x71, 0xF1, 0x76, 0x62,0x38, 0x13, 0x71, 0xF3, 0x76, 0x62};
-	writeCommand(0x63); // 0x63
-	spiWriteDataBuffer(seqReg63, sizeof(seqReg63));
-	static  uint8_t seqReg64[] = {
-		0x3B, 0x29, 0xF1, 0x01, 0xF1, 0x00, 0x0A};
-	writeCommand(0x64); 
-	spiWriteDataBuffer(seqReg64, sizeof(seqReg64));
-	static uint8_t seqReg66[] = {
-		0x3C, 0x00, 0xCD, 0x67, 0x45, 0x45, 0x10, 0x00, 0x00, 0x00};
-	writeCommand(0x66); 
-	spiWriteDataBuffer(seqReg66, sizeof(seqReg66));
-	static uint8_t seqReg67[] = {
-		0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98};
-	writeCommand(0x67); 
-	spiWriteDataBuffer(seqReg67, sizeof(seqReg67));
-
-	static uint8_t seqPorchCtrl[] = {
-		0x08, 0x09, 0x14, 0x08};
-	writeCommand(GC9D01_BLANK_PORCH_CTRL); // 
-	spiWriteDataBuffer(seqPorchCtrl, sizeof(seqPorchCtrl));
-
-
-	// Undocumented in datasheet registers
-	static uint8_t seqReg74[] = {
-		0x10, 0x85, 0x80, 0x00, 0x00, 0x4E, 0x00
-	};
-	writeCommand(0x74); 
-	spiWriteDataBuffer(seqReg74, sizeof(seqReg74));
 	writeCommand(0x98);
 	writeData(0x3E);
-	writeData(0x07);
+	writeCommand(0x99);
+	writeData(0x3E);
 
-	writeCommand(GC9D01_TEON);
+	writeCommand(0xB5);
+	writeData(0x0D);
+	writeData(0x0D);
+
+	writeCommand(0x60);
+	writeData(0x38);
+	writeData(0x0F);
+	writeData(0x79);
+	writeData(0x67);
+
+	writeCommand(0x61);
+	writeData(0x38);
+	writeData(0x11);
+	writeData(0x79);
+	writeData(0x67);
+
+	writeCommand(0x64);
+	writeData(0x38);
+	writeData(0x17);
+	writeData(0x71);
+	writeData(0x5F);
+	writeData(0x79);
+	writeData(0x67);
+
+	writeCommand(0x65);
+	writeData(0x38);
+	writeData(0x13);
+	writeData(0x71);
+	writeData(0x5B);
+	writeData(0x79);
+	writeData(0x67);
+
+	writeCommand(0x6A);
 	writeData(0x00);
-	writeCommand(GC9D01_INVON);
-	writeCommand(GC9D01_SLPOUT);
-	MILLISEC_DELAY (_sleepDelay);
-	TFTenableDisplay(true);
+	writeData(0x00);
+
+	writeCommand(0x6C);
+	writeData(0x22);
+	writeData(0x02);
+	writeData(0x22);
+	writeData(0x02);
+	writeData(0x22);
+	writeData(0x22);
+	writeData(0x50);
+
+	writeCommand(0x6E);
+	writeData(0x03);
+	writeData(0x03);
+	writeData(0x01);
+	writeData(0x01);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x0f);
+	writeData(0x0f);
+	writeData(0x0d);
+	writeData(0x0d);
+	writeData(0x0b);
+	writeData(0x0b);
+	writeData(0x09);
+	writeData(0x09);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x0a);
+	writeData(0x0a);
+	writeData(0x0c);
+	writeData(0x0c);
+	writeData(0x0e);
+	writeData(0x0e);
+	writeData(0x10);
+	writeData(0x10);
+	writeData(0x00);
+	writeData(0x00);
+	writeData(0x02);
+	writeData(0x02);
+	writeData(0x04);
+	writeData(0x04);
+
+	writeCommand(0xbf);
+	writeData(0x01);
+
+	writeCommand(0xF9);
+	writeData(0x40);
+
+	writeCommand(0x9b);
+	writeData(0x3b);
+	writeCommand(0x93);
+	writeData(0x33);
+	writeData(0x7f);
+	writeData(0x00);
+
+	writeCommand(0x7E);
+	writeData(0x30);
+
+	writeCommand(0x70);
+	writeData(0x0d);
+	writeData(0x02);
+	writeData(0x08);
+	writeData(0x0d);
+	writeData(0x02);
+	writeData(0x08);
+
+	writeCommand(0x71);
+	writeData(0x0d);
+	writeData(0x02);
+	writeData(0x08);
+
+	writeCommand(0x91);
+	writeData(0x0E);
+	writeData(0x09);
+
+	writeCommand(0xc3);
+	writeData(0x18);
+	writeCommand(0xc4);
+	writeData(0x18);
+	writeCommand(0xc9);
+	writeData(0x3c);
+
+	writeCommand(0xf0);
+	writeData(0x13);
+	writeData(0x15);
+	writeData(0x04);
+	writeData(0x05);
+	writeData(0x01);
+	writeData(0x38);
+
+	writeCommand(0xf2);
+	writeData(0x13);
+	writeData(0x15);
+	writeData(0x04);
+	writeData(0x05);
+	writeData(0x01);
+	writeData(0x34);
+
+	writeCommand(0xf1);
+	writeData(0x4b);
+	writeData(0xb8);
+	writeData(0x7b);
+	writeData(0x34);
+	writeData(0x35);
+	writeData(0xef);
+
+	writeCommand(0xf3);
+	writeData(0x47);
+	writeData(0xb4);
+	writeData(0x72);
+	writeData(0x34);
+	writeData(0x35);
+	writeData(0xda);
+
+	writeCommand(0x36);
+
+  	writeData(0x00);
+
+
+	writeCommand(0x11);
+	MILLISEC_DELAY(200); 
+
+	writeCommand(0x29);
+	
+	//writeCommand(GC9D01_INREGEN1);
+	//writeCommand(GC9D01_INREGEN2);
+
+	//// Undocumented in datasheet registers
+	//writeCommand(0xEB); 
+	//writeData(0x14);
+	//writeCommand(0x84); 
+	//writeData(0x60);
+	//writeCommand(0x85);
+	//writeData(0xF7);
+	//writeCommand(0x86);
+	//writeData(0xFC);
+	//writeCommand(0x87);
+	//writeData(0x28);
+	//writeCommand(0x8E);
+	//writeData(0x0F);
+	//writeCommand(0x8F);
+	//writeData(0xFC);
+	//writeCommand(0x88);
+	//writeData(0x0A);
+	//writeCommand(0x89);
+	//writeData(0x21);
+	//writeCommand(0x8A);
+	//writeData(0x00);
+	//writeCommand(0x8B);
+	//writeData(0x80);
+	//writeCommand(0x8C);
+	//writeData(0x01);
+	//writeCommand(0x8D);
+	//writeData(0x03);
+
+	//writeCommand(GC9D01_FUNCTION_CTRL);//0xb6
+	//writeData(0x00);
+	//writeData(0x00);
+	//writeCommand(GC9D01_MADCTL);
+	//writeData(MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::BGR); // BGR color filter panel
+	//writeCommand(GC9D01_COLMOD);
+	//writeData(0x05);  // 16 bits / pixel DBI
+
+	//writeCommand(0x90); // Undocumented in datasheet registers
+	//uint8_t seqReg90[] = {0x08, 0x08, 0x08, 0x08};
+	//spiWriteDataBuffer(seqReg90, sizeof(seqReg90));
+
+	//writeCommand(GC9D01_TEWC);
+	//writeData(0x01); // Tearing Effect width 
+	//writeCommand(0xBD); // Undocumented in datasheet register
+	//writeData(0x06);
+	//writeCommand(0xBC); // Undocumented in datasheet register
+	//writeData(0x00);
+	//writeCommand(0xFF); // Undocumented in datasheet register
+	//uint8_t seqRegFF[] = {0x60, 0x01, 0x04};
+	//spiWriteDataBuffer(seqRegFF, sizeof(seqRegFF));
+
+	//writeCommand(GC9D01_POWER2);
+	//writeData(0x48);
+	//writeCommand(GC9D01_POWER3);
+	//writeData(0x48);
+	//writeCommand(GC9D01_POWER4);
+	//writeData(0x25);
+
+	 //// Undocumented in datasheet register
+	//writeCommand(0xBE);
+	//writeData(0x11);
+	//writeCommand(0xE1);
+	//writeData(0x10);
+	//writeData(0x0E);
+	//writeCommand(0xDF);
+	//uint8_t seqRegDF[] = {0x21, 0x10, 0x02};
+	//spiWriteDataBuffer(seqRegDF, sizeof(seqRegDF));
+
+	//// gamma control sequence
+	//writeCommand(GC9D01_GAMMA1);
+	//uint8_t seqGamma1_3[] = {0x4b, 0x0f, 0x0A, 0x0B, 0x15, 0x30};
+	//spiWriteDataBuffer(seqGamma1_3, sizeof(seqGamma1_3));
+	//writeCommand(GC9D01_GAMMA2);
+	//uint8_t seqGamma2_4[] = {0x43, 0x70, 0x72, 0x36, 0x37, 0x6f};
+	//spiWriteDataBuffer(seqGamma2_4, sizeof(seqGamma2_4));
+	//writeCommand(GC9D01_GAMMA3);
+	//spiWriteDataBuffer(seqGamma1_3, sizeof(seqGamma1_3));
+	//writeCommand(GC9D01_GAMMA4 );
+	//spiWriteDataBuffer(seqGamma2_4, sizeof(seqGamma2_4));
+
+	//// Undocumented in datasheet register
+	//writeCommand(0xED);
+	//writeData(0x1B);
+	//writeData(0x0B);
+	//writeCommand(0xAC);
+	//writeData(0x47);
+	//writeCommand(0xAE);
+	//writeData(0x77);
+	//writeCommand(0xCD);
+	//writeData(0x63);
+	//writeCommand(0x70);
+	//uint8_t seqReg70[] = {0x07, 0x09, 0x04, 0x0C, 0x0D, 0x09, 0x07, 0x08, 0x03};
+	//spiWriteDataBuffer(seqReg70, sizeof(seqReg70));
+
+	//writeCommand(GC9D01_FRAMERATE);
+	//writeData(0x34); // 4 dot inversion DINV[3:0] : Set display inversion mode
+
+	//// Undocumented in datasheet registers
+	//static uint8_t seqReg60[] = {
+		//0x38, 0x0B, 0x76, 0x62,0x39, 0xF0, 0x76, 0x62};
+	//writeCommand(0x60); 
+	//spiWriteDataBuffer(seqReg60, sizeof(seqReg60));
+	//static  uint8_t seqReg61[] = {
+		//0x38, 0xF6, 0x76, 0x62,0x38, 0xF7, 0x76, 0x62};
+	//writeCommand(0x61); 
+	//spiWriteDataBuffer(seqReg61, sizeof(seqReg61));
+	//static  uint8_t seqReg62[] = {
+		//0x38, 0x0D, 0x71, 0xED, 0x76, 0x62,0x38, 0x0F, 0x71, 0xEF, 0x76, 0x62};
+	//writeCommand(0x62); 
+	//spiWriteDataBuffer(seqReg62, sizeof(seqReg62));
+	//static  uint8_t seqReg63[] = {
+		//0x38, 0x11, 0x71, 0xF1, 0x76, 0x62,0x38, 0x13, 0x71, 0xF3, 0x76, 0x62};
+	//writeCommand(0x63); // 0x63
+	//spiWriteDataBuffer(seqReg63, sizeof(seqReg63));
+	//static  uint8_t seqReg64[] = {
+		//0x3B, 0x29, 0xF1, 0x01, 0xF1, 0x00, 0x0A};
+	//writeCommand(0x64); 
+	//spiWriteDataBuffer(seqReg64, sizeof(seqReg64));
+	//static uint8_t seqReg66[] = {
+		//0x3C, 0x00, 0xCD, 0x67, 0x45, 0x45, 0x10, 0x00, 0x00, 0x00};
+	//writeCommand(0x66); 
+	//spiWriteDataBuffer(seqReg66, sizeof(seqReg66));
+	//static uint8_t seqReg67[] = {
+		//0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98};
+	//writeCommand(0x67); 
+	//spiWriteDataBuffer(seqReg67, sizeof(seqReg67));
+
+	//static uint8_t seqPorchCtrl[] = {
+		//0x08, 0x09, 0x14, 0x08};
+	//writeCommand(GC9D01_BLANK_PORCH_CTRL); // 
+	//spiWriteDataBuffer(seqPorchCtrl, sizeof(seqPorchCtrl));
+
+
+	//// Undocumented in datasheet registers
+	//static uint8_t seqReg74[] = {
+		//0x10, 0x85, 0x80, 0x00, 0x00, 0x4E, 0x00
+	//};
+	//writeCommand(0x74); 
+	//spiWriteDataBuffer(seqReg74, sizeof(seqReg74));
+	//writeCommand(0x98);
+	//writeData(0x3E);
+	//writeData(0x07);
+
+	//writeCommand(GC9D01_TEON);
+	//writeData(0x00);
+	//writeCommand(GC9D01_INVON);
+	//writeCommand(GC9D01_SLPOUT);
+	//MILLISEC_DELAY (_sleepDelay);
+	//TFTenableDisplay(true);
 }
 
 
@@ -408,38 +646,38 @@ void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h
 	@param scrollArea describes the Scrolling Area.
 	@param bottomFixed describes the Bottom Fixed Area.
 */
-void GC9D01_LTSM::TFTsetScrollArea(uint16_t topFixed, uint16_t scrollArea, uint16_t bottomFixed) {
+//void GC9D01_LTSM::TFTsetScrollArea(uint16_t topFixed, uint16_t scrollArea, uint16_t bottomFixed) {
 
-	writeCommand(GC9D01_VSCRDEF);
-	writeData(topFixed >> 8);
-	writeData(topFixed & 0xFF);
-	writeData(scrollArea >> 8);
-	writeData(scrollArea  & 0xFF);
-	writeData(bottomFixed >> 8);
-	writeData(bottomFixed & 0xFF);
-}
+	//writeCommand(GC9D01_VSCRDEF);
+	//writeData(topFixed >> 8);
+	//writeData(topFixed & 0xFF);
+	//writeData(scrollArea >> 8);
+	//writeData(scrollArea  & 0xFF);
+	//writeData(bottomFixed >> 8);
+	//writeData(bottomFixed & 0xFF);
+//}
 
 /*!
 	@brief This method is used together with the setScrollDefinition.
 	@param vsp scrolling mode
 */
-void GC9D01_LTSM::TFTsetScrollStart(uint16_t vsp) {
-	writeCommand(GC9D01_VSCRSADD);
-	writeData(vsp >> 8);
-	writeData(vsp & 0xFF);
-}
+//void GC9D01_LTSM::TFTsetScrollStart(uint16_t vsp) {
+	//writeCommand(GC9D01_VSCRSADD);
+	//writeData(vsp >> 8);
+	//writeData(vsp & 0xFF);
+//}
 
 /*! @brief Scroll Mode can be left ,by the Normal Display Mode ON cmd*/
-void GC9D01_LTSM::TFTScrollModeLeave(void) {writeCommand(GC9D01_NORON);}
+//void GC9D01_LTSM::TFTScrollModeLeave(void) {writeCommand(GC9D01_NORON);}
 
 /*!
 	@brief Software reset command
 */
-void GC9D01_LTSM::TFTresetSWDisplay(void) 
-{
-  writeCommand(GC9D01_SWRESET);
-  MILLISEC_DELAY(150);
-}
+//void GC9D01_LTSM::TFTresetSWDisplay(void) 
+//{
+  //writeCommand(GC9D01_SWRESET);
+  //MILLISEC_DELAY(150);
+//}
 
 /*!
 	@brief enable /disable display mode
@@ -447,15 +685,15 @@ void GC9D01_LTSM::TFTresetSWDisplay(void)
 	@note Temporarily blank the screen.
 	Use Case: Screen blanking, brief off periods without resetting or reinitializing the display.
 */
-void GC9D01_LTSM::TFTenableDisplay(bool enableDisplay){
-	if(enableDisplay) {
-		writeCommand(GC9D01_DISPON);
-		_displayOn = true;
-	} else {
-		writeCommand(GC9D01_DISPOFF);
-		_displayOn = false;
-	}
-}
+//void GC9D01_LTSM::TFTenableDisplay(bool enableDisplay){
+	//if(enableDisplay) {
+		//writeCommand(GC9D01_DISPON);
+		//_displayOn = true;
+	//} else {
+		//writeCommand(GC9D01_DISPOFF);
+		//_displayOn = false;
+	//}
+//}
 
 /*!
 	@brief Set the power mode of the display
@@ -464,75 +702,75 @@ void GC9D01_LTSM::TFTenableDisplay(bool enableDisplay){
 		Power states are based on the power control flow chart in the datasheet.
 		FIG 89 5.10.2. Power Flow Chart	
 */
-void GC9D01_LTSM::TFTsetPowerMode(PowerState_e mode) {
-	// If already in the desired state or off , skip
-	if (_currentPowerState == mode || _displayOn != true) 
-	{
-		#ifdef dislib16_DEBUG_MODE_ENABLE
-			Serial.println("Warning: TFTsetPowerMode: Display already in this state or off");
-		#endif
-		return;
-	}
+//void GC9D01_LTSM::TFTsetPowerMode(PowerState_e mode) {
+	//// If already in the desired state or off , skip
+	//if (_currentPowerState == mode || _displayOn != true) 
+	//{
+		//#ifdef dislib16_DEBUG_MODE_ENABLE
+			//Serial.println("Warning: TFTsetPowerMode: Display already in this state or off");
+		//#endif
+		//return;
+	//}
 	
-	// Always return to a known base state
-	writeCommand(GC9D01_SLPOUT);
-	MILLISEC_DELAY(_sleepDelay);
+	//// Always return to a known base state
+	//writeCommand(GC9D01_SLPOUT);
+	//MILLISEC_DELAY(_sleepDelay);
 
-	switch (mode) {
-		case PowerState_e::NormalIdleOff:
-			writeCommand(GC9D01_NORON);
-			writeCommand(GC9D01_IDLEOFF);
-			break;
-		case PowerState_e::NormalIdleOn:
-			writeCommand(GC9D01_NORON);
-			writeCommand(GC9D01_IDLEON);
-			break;
-		case PowerState_e::PartialIdleOff:
-			writeCommand(GC9D01_PTLON);
-			writeCommand(GC9D01_IDLEOFF);
-			break;
-		case PowerState_e::PartialIdleOn:
-			writeCommand(GC9D01_PTLON);
-			writeCommand(GC9D01_IDLEON);
-			break;
-		case PowerState_e::SleepNormalIdleOff:
-			writeCommand(GC9D01_NORON);
-			writeCommand(GC9D01_IDLEOFF);
-			writeCommand(GC9D01_SLPIN);
-			MILLISEC_DELAY(_sleepDelay);
-			break;
-		case PowerState_e::SleepNormalIdleOn:
-			writeCommand(GC9D01_NORON);
-			writeCommand(GC9D01_IDLEON);
-			writeCommand(GC9D01_SLPIN);
-			MILLISEC_DELAY(_sleepDelay);
-			break;
-		case PowerState_e::SleepPartialIdleOff:
-			writeCommand(GC9D01_PTLON);
-			writeCommand(GC9D01_IDLEOFF);
-			writeCommand(GC9D01_SLPIN);
-			MILLISEC_DELAY(_sleepDelay);
-			break;
-		case PowerState_e::SleepPartialIdleOn:
-			writeCommand(GC9D01_PTLON);
-			writeCommand(GC9D01_IDLEON);
-			writeCommand(GC9D01_SLPIN);
-			MILLISEC_DELAY(_sleepDelay);
-			break;
-	}
-	_currentPowerState = mode;
-}
+	//switch (mode) {
+		//case PowerState_e::NormalIdleOff:
+			//writeCommand(GC9D01_NORON);
+			//writeCommand(GC9D01_IDLEOFF);
+			//break;
+		//case PowerState_e::NormalIdleOn:
+			//writeCommand(GC9D01_NORON);
+			//writeCommand(GC9D01_IDLEON);
+			//break;
+		//case PowerState_e::PartialIdleOff:
+			//writeCommand(GC9D01_PTLON);
+			//writeCommand(GC9D01_IDLEOFF);
+			//break;
+		//case PowerState_e::PartialIdleOn:
+			//writeCommand(GC9D01_PTLON);
+			//writeCommand(GC9D01_IDLEON);
+			//break;
+		//case PowerState_e::SleepNormalIdleOff:
+			//writeCommand(GC9D01_NORON);
+			//writeCommand(GC9D01_IDLEOFF);
+			//writeCommand(GC9D01_SLPIN);
+			//MILLISEC_DELAY(_sleepDelay);
+			//break;
+		//case PowerState_e::SleepNormalIdleOn:
+			//writeCommand(GC9D01_NORON);
+			//writeCommand(GC9D01_IDLEON);
+			//writeCommand(GC9D01_SLPIN);
+			//MILLISEC_DELAY(_sleepDelay);
+			//break;
+		//case PowerState_e::SleepPartialIdleOff:
+			//writeCommand(GC9D01_PTLON);
+			//writeCommand(GC9D01_IDLEOFF);
+			//writeCommand(GC9D01_SLPIN);
+			//MILLISEC_DELAY(_sleepDelay);
+			//break;
+		//case PowerState_e::SleepPartialIdleOn:
+			//writeCommand(GC9D01_PTLON);
+			//writeCommand(GC9D01_IDLEON);
+			//writeCommand(GC9D01_SLPIN);
+			//MILLISEC_DELAY(_sleepDelay);
+			//break;
+	//}
+	//_currentPowerState = mode;
+//}
 
 /*!
   @brief Set display brightness (0–255).
   @param level Brightness level, 0 = darkest, 255 = brightest
   @note This is a software brightness control, not hardware PWM, may not work on all displays.
 */
-void GC9D01_LTSM::TFTsetBrightness(uint8_t level)
-{
-	writeCommand(GC9D01_SETCTRL); // CTRL Display
-	writeData(0x2C);    // Brightness registers are active, Display Dimming is on Backlight On
-	writeCommand(GC9D01_SETBRIGHT);
-	writeData(level);
-}
+//void GC9D01_LTSM::TFTsetBrightness(uint8_t level)
+//{
+	//writeCommand(GC9D01_SETCTRL); // CTRL Display
+	//writeData(0x2C);    // Brightness registers are active, Display Dimming is on Backlight On
+	//writeCommand(GC9D01_SETBRIGHT);
+	//writeData(level);
+//}
 //**************** EOF *****************

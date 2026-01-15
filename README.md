@@ -40,7 +40,7 @@ circuit.
 9. Hardware & software SPI options
 10. [Project url link](https://github.com/gavinlyonsrepo/GC9D01_LTSM)
 
-* [DataSheet](https://buydisplay.com/download/ic/GC9D01.pdf)
+* [DataSheet](https://buydisplay.com/download/ic/GC9D01N.pdf)
 
 ## Installation
 
@@ -108,7 +108,7 @@ User can adjust screen pixel height, screen pixel width.
 
 ## Hardware
 
-[![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extra/images/gc2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extra/images/gc2.jpg)
+[![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)
 
 Connections as setup in HELLO_WORLD.ino  test file.
 
@@ -130,21 +130,6 @@ Connections as setup in HELLO_WORLD.ino  test file.
 4. NOTE: Connect LED backlight pin 1 thru a resistor to VCC.
 
 ## Tested
-
-Tested with both software and hardware SPI on:
-
-- **ESP32**
-- **Arduino UNO R4 Minima**  
- 
-Compiled only (not fully hardware-tested) on:
-
-- **Arduino UNO**
-- **ESP8266**
-- **STM32 “Blue Pill”**
-
-> Some examples on low-RAM MCUs will fail( insufficient memory ), numerous fonts and bitmap data are included.  
-> Frame buffer mode example requires sufficient dynamic memory for the buffer — see the README in display16_LTSM for details.
-
 
 ## Output
 

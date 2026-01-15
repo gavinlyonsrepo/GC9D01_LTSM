@@ -25,7 +25,7 @@ public:
 	 * These states combine the modes: Normal/Partial, Idle ON/OFF, and Sleep IN/OUT.
 	 * They are listed from highest to lowest power consumption.
 	 * 	Power states are based on the power control flow chart in the datasheet.
-		FIG 89 5.10.2. Power Flow Chart	
+		figure89 5.10.2. Power Flow Chart	
 	 */
 	enum class PowerState_e : uint8_t{
 		NormalIdleOff,  	/**< SLPOUT + NORON + IDMOFF */
@@ -47,16 +47,16 @@ public:
 	void TFTPowerDown(void);
 	uint16_t TFTSwSpiGpioDelayGet(void);
 	void TFTSwSpiGpioDelaySet(uint16_t);
-	//void TFTresetSWDisplay(void);
+	void TFTresetSWDisplay(void);
 
-	//void TFTsetRotation(display_rotate_e r);
-	//void TFTchangeInvertMode(bool m);
-	//void TFTsetPowerMode(PowerState_e m);
-	//void TFTenableDisplay(bool m);
-	//void TFTsetBrightness(uint8_t level);
-	//void TFTsetScrollArea(uint16_t topFixed, uint16_t scrollArea, uint16_t bottomFixed);
-	//void TFTsetScrollStart(uint16_t vsp);
-	//void TFTScrollModeLeave(void);
+	void TFTsetRotation(display_rotate_e r);
+	void TFTchangeInvertMode(bool m);
+	void TFTsetPowerMode(PowerState_e m);
+	void TFTenableDisplay(bool m);
+	void TFTsetBrightness(uint8_t level);
+	void TFTsetScrollArea(uint16_t topFixed, uint16_t scrollArea, uint16_t bottomFixed);
+	void TFTsetScrollStart(uint16_t vsp);
+	void TFTScrollModeLeave(void);
 
 private:
 	void TFTHWSPIInitialize(void);
@@ -66,14 +66,14 @@ private:
 	// Display 
 	PowerState_e _currentPowerState = PowerState_e::NormalIdleOff; /**< Enum to hold display mode */
 	bool _displayOn = false; /**< Enum to hold display on/off status */
-	const uint16_t _sleepDelay = 120; /**< Sleep delay in ms */
+	const uint16_t _sleepDelay = 120; /**< Sleep delay in ms, datasheet 4.2.4. */
 	// SPI
 	bool _resetPinOn = true; /**< reset pin? true:hw rst pin, false:sw rt*/
 	// Screen
 	uint8_t _colstart = 0;			/**< Used to offset column in the event of defect at edge of screen */
 	uint8_t _rowstart = 0;			/**< Used to offset row in the event of defect at edge of screen */
-	uint16_t _widthStartTFT = 240;	/**<  never change after first init */
-	uint16_t _heightStartTFT = 240; /**< never change after first init */
+	uint16_t _widthStartTFT = 160;	/**<  never change after first init */
+	uint16_t _heightStartTFT = 160; /**< never change after first init */
 
 	/*!
 	 * @brief MADCTL bit flags for register GC9D01_MADCTL (0x36).
@@ -91,62 +91,62 @@ private:
 
 	// GC9D01 registers + Commands
 	
-	//static constexpr uint8_t GC9D01_SWRESET = 0x01; /**< Software Reset */
-	//static constexpr uint8_t GC9D01_RDDID = 0x04;	/**< Read display identification information */
-	//static constexpr uint8_t GC9D01_RDDST = 0x09;	/**< Read Display Status */
+	static constexpr uint8_t GC9D01_SWRESET = 0x01; /**< Software Reset undocumented ???*/
+	static constexpr uint8_t GC9D01_RDDID = 0x04;	/**< Read display identification information */
+	static constexpr uint8_t GC9D01_RDDST = 0x09;	/**< Read Display Status */
 
-	//static constexpr uint8_t GC9D01_SLPIN = 0x10;	/**< Enter Sleep Mode */
-	//static constexpr uint8_t GC9D01_SLPOUT = 0x11;	/**< Sleep Out */
-	//static constexpr uint8_t GC9D01_PTLON = 0x12;	/**< Partial Mode ON */
-	//static constexpr uint8_t GC9D01_NORON = 0x13;	/**< Normal Display Mode ON */
-	//static constexpr uint8_t GC9D01_DISPOFF = 0x28; /**< Display OFF */
-	//static constexpr uint8_t GC9D01_DISPON = 0x29;	/**< Display ON */
-	//static constexpr uint8_t GC9D01_IDLEOFF = 0x38; /**< Idle mode OFF */
-	//static constexpr uint8_t GC9D01_IDLEON = 0x39;	/**< Idle mode ON */
+	static constexpr uint8_t GC9D01_SLPIN = 0x10;	/**< Enter Sleep Mode */
+	static constexpr uint8_t GC9D01_SLPOUT = 0x11;	/**< Sleep Out */
+	static constexpr uint8_t GC9D01_PTLON = 0x12;	/**< Partial Mode ON */
+	static constexpr uint8_t GC9D01_NORON = 0x13;	/**< Normal Display Mode ON */
+	static constexpr uint8_t GC9D01_DISPOFF = 0x28; /**< Display OFF */
+	static constexpr uint8_t GC9D01_DISPON = 0x29;	/**< Display ON */
+	static constexpr uint8_t GC9D01_IDLEOFF = 0x38; /**< Idle mode OFF */
+	static constexpr uint8_t GC9D01_IDLEON = 0x39;	/**< Idle mode ON */
 
-	//static constexpr uint8_t GC9D01_INVOFF = 0x20;	  /**< Display Inversion OFF */
-	//static constexpr uint8_t GC9D01_INVON = 0x21;	  /**< Display Inversion ON */
+	static constexpr uint8_t GC9D01_INVOFF = 0x20;	  /**< Display Inversion OFF */
+	static constexpr uint8_t GC9D01_INVON = 0x21;	  /**< Display Inversion ON */
 	static constexpr uint8_t GC9D01_CASET = 0x2A;	  /**< Column Address Set */
-	static constexpr uint8_t GC9D01_RASET = 0x2B;	  /**< Row Address Set */
+	static constexpr uint8_t GC9D01_RASET = 0x2B;	  /**< Row/page Address Set */
 	static constexpr uint8_t GC9D01_RAMWR = 0x2C;	  /**< Memory Write */
-	//static constexpr uint8_t GC9D01_PTLAR = 0x30;	  /**< Partial Area */
-	//static constexpr uint8_t GC9D01_VSCRDEF = 0x33;	  /**< Vertical Scrolling Definition */
-	//static constexpr uint8_t GC9D01_TEOFF = 0x34;	  /**< Tearing Effect Line OFF */
-	//static constexpr uint8_t GC9D01_TEON = 0x35;	  /**< Tearing Effect Line ON */
-	//static constexpr uint8_t GC9D01_MADCTL = 0x36;	  /**< Memory Access Control */
-	//static constexpr uint8_t GC9D01_VSCRSADD = 0x37;  /**< Vertical Scrolling Start Address */
-	//static constexpr uint8_t GC9D01_COLMOD = 0x3A;	  /**< Pixel Format Set */
-	//static constexpr uint8_t GC9D01_CONTINUE = 0x3C;  /**< Write Memory Continue */
-	//static constexpr uint8_t GC9D01_TEARSET = 0x44;	  /**< Set Tear Scanline */
-	//static constexpr uint8_t GC9D01_GETLINE = 0x45;	  /**< Get Scanline */
-	//static constexpr uint8_t GC9D01_SETBRIGHT = 0x51; /**< Write Display Brightness */
-	//static constexpr uint8_t GC9D01_SETCTRL = 0x53;	  /**< Write CTRL Display */
+	static constexpr uint8_t GC9D01_PTLAR = 0x30;	  /**< Partial Area */
+	static constexpr uint8_t GC9D01_VSCRDEF = 0x33;   /**< Vertical Scrolling Definition */
+	static constexpr uint8_t GC9D01_TEOFF = 0x34;	  /**< Tearing Effect Line OFF */
+	static constexpr uint8_t GC9D01_TEON = 0x35;	  /**< Tearing Effect Line ON */
+	static constexpr uint8_t GC9D01_MADCTL = 0x36;	  /**< Memory Access Control */
+	static constexpr uint8_t GC9D01_VSCRSADD = 0x37;  /**< Vertical Scrolling Start Address */
+	static constexpr uint8_t GC9D01_COLMOD = 0x3A;	  /**< Pixel Format Set */
+	static constexpr uint8_t GC9D01_CONTINUE = 0x3C;  /**< Write Memory Continue */
+	static constexpr uint8_t GC9D01_TEARSET = 0x44;	  /**< Set Tear Scanline */
+	static constexpr uint8_t GC9D01_GETLINE = 0x45;	  /**< Get Scanline */
+	static constexpr uint8_t GC9D01_SETBRIGHT = 0x51; /**< Write Display Brightness */
+	static constexpr uint8_t GC9D01_SETCTRL = 0x53;	  /**< Write CTRL Display */
 
-	//static constexpr uint8_t GC9D01_TEWC = 0xBA;			 /**< Tearing effect width control */
-	//static constexpr uint8_t GC9D01_BLANK_PORCH_CTRL = 0xB5; /**< Blanking Porch Control (B5h) */
-	//static constexpr uint8_t GC9D01_FUNCTION_CTRL = 0xB6;	 /**< Display Function Control */
+	static constexpr uint8_t GC9D01_RGB_CTRL = 0xB0;	  /**< RGB Interface Signal Control*/
+	static constexpr uint8_t GC9D01_TEWC = 0xB4;			 /**< Tearing effect width control */
+	static constexpr uint8_t GC9D01_BLANK_PORCH_CTRL = 0xB5; /**< Blanking Porch Control */
+	static constexpr uint8_t GC9D01_FUNCTION_CTRL = 0xB6;	 /**< Display Function Control */
+	static constexpr uint8_t GC9D01_DUAL_SINGLE = 0xBF;	 /**< Dual-Single gate select */
 
-	//static constexpr uint8_t GC9D01_POWER1 = 0xC1; /**< Power Control 1 */
-	//static constexpr uint8_t GC9D01_POWER2 = 0xC3; /**< Power Control 2 */
-	//static constexpr uint8_t GC9D01_POWER3 = 0xC4; /**< Power Control 3 */
-	//static constexpr uint8_t GC9D01_POWER4 = 0xC9; /**< Power Control 4 */
-	//static constexpr uint8_t GC9D01_POWER7 = 0xA7; /**< Power Control 7 */
+	static constexpr uint8_t GC9D01_POWER_CTRL  = 0xC1; /**< Power Criterion Control */
+	static constexpr uint8_t GC9D01_VREG1A_CTRL = 0xC3; /**< Vreg1a voltage Control  */
+	static constexpr uint8_t GC9D01_VREG1B_CTRL = 0xC4; /**< Vreg1b voltage Control  */
+	static constexpr uint8_t GC9D01_VREG2A_CTRL = 0xC9; /**< Vreg2a voltage Control  */
 
-	//static constexpr uint8_t GC9D01_RDID1 = 0xDA; /**< Read ID 1 */
-	//static constexpr uint8_t GC9D01_RDID2 = 0xDB; /**< Read ID 2 */
-	//static constexpr uint8_t GC9D01_RDID3 = 0xDC; /**< Read ID 3 */
-
-	//static constexpr uint8_t GC9D01_FRAMERATE = 0xE8; /**< Frame rate control */
-	//static constexpr uint8_t GC9D01_SPI2DATA = 0xE9;  /**< SPI 2DATA control */
-	//static constexpr uint8_t GC9D01_INREGEN2 = 0xEF;  /**< Inter register enable 2 */
-
-	//static constexpr uint8_t GC9D01_GAMMA1 = 0xF0;	 /**< Set gamma 1 */
-	//static constexpr uint8_t GC9D01_GAMMA2 = 0xF1;	 /**< Set gamma 2 */
-	//static constexpr uint8_t GC9D01_GAMMA3 = 0xF2;	 /**< Set gamma 3 */
-	//static constexpr uint8_t GC9D01_GAMMA4 = 0xF3;	 /**< Set gamma 4 */
-	//static constexpr uint8_t GC9D01_IFACE = 0xF6;	 /**< Interface control */
-	//static constexpr uint8_t GC9D01_INREGEN1 = 0xFE; /**< Inter register enable 1 */
+	static constexpr uint8_t GC9D01_RDID1 = 0xDA; /**< Read ID 1 */
+	static constexpr uint8_t GC9D01_RDID2 = 0xDB; /**< Read ID 2 */
+	static constexpr uint8_t GC9D01_RDID3 = 0xDC; /**< Read ID 3 */
 	
+	static constexpr uint8_t GC9D01_GAMMA1 = 0xF0;	 /**< Set gamma 1 */
+	static constexpr uint8_t GC9D01_GAMMA2 = 0xF1;	 /**< Set gamma 2 */
+	static constexpr uint8_t GC9D01_GAMMA3 = 0xF2;	 /**< Set gamma 3 */
+	static constexpr uint8_t GC9D01_GAMMA4 = 0xF3;	 /**< Set gamma 4 */
+
+	static constexpr uint8_t GC9D01_SPI2DATA    = 0xB1;  /**< SPI 2DATA control */
+	static constexpr uint8_t GC9D01_INVERSION   = 0xEC; /**< Inversion */
+	static constexpr uint8_t GC9D01_IFACE  = 0xF6;	 /**< Interface control */
+	static constexpr uint8_t GC9D01_INREGEN1 = 0xFE; /**< Inter register enable 1 */
+	static constexpr uint8_t GC9D01_INREGEN2    = 0xEF; /**< Inter register enable 2 */
 }; // end of class
 
 // ********************** EOF *********************

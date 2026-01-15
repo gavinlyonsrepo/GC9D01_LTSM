@@ -62,13 +62,7 @@ void Test100(void) {
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
   myTFT.setCursor(25, 80);
   myTFT.setFont(FontArialBold);
-  myTFT.print("Hello World");
-  delay(TEST_DELAY5);
-  myTFT.fillScreen(myTFT.C_RED);
-  delay(TEST_DELAY5);
-  myTFT.fillScreen(myTFT.C_GREEN);
-  delay(TEST_DELAY5);
-  myTFT.fillScreen(myTFT.C_BLUE);
+  myTFT.print("Hello");
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);
   delay(TEST_DELAY1);

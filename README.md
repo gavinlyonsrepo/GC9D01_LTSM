@@ -71,7 +71,7 @@ There are more examples there that can be ported easily. I will include more exa
 | Filename .ino | Function  | Note |
 | --- | --- | --- |
 | HELLO WORLD | Hello world basic use case | --- |
-| FUNCTIONS | Function testing| Rotate, invert etc|
+| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| Screen Rotate not working yet|
 
 
 ### SPI
@@ -103,7 +103,7 @@ The 5 GPIO pins used. Any GPIO can be used for these.
 
 *USER OPTION 2 Screen size*
 
-User can adjust screen pixel height, screen pixel width.
+User can adjust screen pixel height, screen pixel width and resolution(4 enum values available).
 
 
 ## Hardware

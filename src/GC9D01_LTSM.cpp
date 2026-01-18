@@ -2,6 +2,7 @@
 	@file   GC9D01_LTSM.cpp
 	@author Gavin Lyons
 	@brief  Source file. Contains driver methods for GC9D01_LTSM display 
+	@todo rotate + brightness control not working 
 */
 
 #include "GC9D01_LTSM.hpp"
@@ -162,18 +163,23 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
-		case Degrees_90: // MX + MV 0x06
-			madctl |= (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MV); 
+		case Degrees_90:
+			//OG gc9A01 MV
+			//2nd madctl |= (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MV);   // MX + MV 0x60
+			madctl |= (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::ML);
 			_width  =_heightStartTFT;
 			_height = _widthStartTFT;
 			break;
-		case Degrees_180:  //  MY + MX  0x0C
-			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX );
+		case Degrees_180:  
+			// OG gc9a01 MADCTL_FLAGS_t::MY 
+			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX ); //  MY + MX  0xC0
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
-		case Degrees_270:  // MY + MV 0x0A
-			madctl |= (MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV); 
+		case Degrees_270:  
+			// OG (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV 
+			// 2nd madctl |= (MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV); // MY + MV 0xA0
+			madctl |= (MADCTL_FLAGS_t::MV |MADCTL_FLAGS_t::MX |MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::ML );
 			_width =_heightStartTFT;
 			_height = _widthStartTFT;
 			break;

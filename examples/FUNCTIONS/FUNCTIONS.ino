@@ -8,7 +8,6 @@
 	-# Test 501 Scroll test
 	-# Test 502 Rotate
 	-# Test 503 change modes test -> Invert, display on/off and Sleep.
-	-# Test 504 brightness 
 */
 
 // libraries
@@ -63,7 +62,6 @@ void loop(void) {
   Test501();
   Test502();
   Test503();
-  Test504();
   EndTests();
 }
 // End OF MAIN
@@ -183,18 +181,6 @@ void Test503() {
   delay(TEST_DELAY5);
 }
 
-void Test504() {
-  Serial.println("Test 504: Brightness");
-  char teststr[] = "brightness";
-  myTFT.writeCharString(25, 100, teststr);
-  delay(TEST_DELAY5);
-  myTFT.TFTsetBrightness(5); // min
-  delay(TEST_DELAY5);
-  myTFT.TFTsetBrightness(125); // mid
-  delay(TEST_DELAY5);
-  myTFT.TFTsetBrightness(250); // max
-  delay(TEST_DELAY5);
-}
 
 void DisplayReset(void) {
   delay(TEST_DELAY5);

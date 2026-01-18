@@ -38,11 +38,22 @@ public:
 		SleepPartialIdleOn	/**< SLPIN + PLTON + IDMON */
 	};
 	
+	/*!
+	 * @brief GC9D01 panel resolution and gate configuration
+	 */
+	enum class Resolution_e : uint8_t
+	{
+		RGB160x160_DualGate,	 /**< 160RGB × 160, S1–S240, Dual gate (default) */
+		RGB120x160_DualGate,	 /**< 120RGB × 160, S31–S210, Dual gate */
+		RGB80x160_SingleGate,	 /**< 80RGB × 160, S1–S240, Single gate */
+		RGB40x160_SingleGate	 /**< 40RGB × 160, S61–S180, Single gate */
+	};
+	
 	virtual void setAddrWindow(uint16_t, uint16_t, uint16_t, uint16_t) override;
 
 	void TFTsetupGPIO_SPI(uint16_t CommDelay, int8_t rst, int8_t dc, int8_t cs, int8_t sclk, int8_t din);
 	void TFTsetupGPIO_SPI(uint32_t baudrate, int8_t rst, int8_t dc, int8_t cs);
-	void TFTInitScreenSize(uint16_t w, uint16_t h);
+	void TFTInitScreenSize(uint16_t w = 160, uint16_t h = 160, Resolution_e r = Resolution_e::RGB160x160_DualGate);
 	void TFTGC9D01Initialize(void);
 	void TFTPowerDown(void);
 	uint16_t TFTSwSpiGpioDelayGet(void);
@@ -65,6 +76,7 @@ private:
 	
 	// Display 
 	PowerState_e _currentPowerState = PowerState_e::NormalIdleOff; /**< Enum to hold display mode */
+	Resolution_e  _currentResolution = Resolution_e::RGB160x160_DualGate ; /**< enum to hold display resolution */
 	bool _displayOn = false; /**< Enum to hold display on/off status */
 	const uint16_t _sleepDelay = 120; /**< Sleep delay in ms, datasheet 4.2.4. */
 	// SPI

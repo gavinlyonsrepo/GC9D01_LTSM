@@ -8,6 +8,7 @@
 	-# Test 501 Scroll test
 	-# Test 502 Rotate
 	-# Test 503 change modes test -> Invert, display on/off and Sleep.
+	-# Test 504 brightness 
 */
 
 // libraries
@@ -49,7 +50,7 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT);
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, GC9D01_LTSM::Resolution_e::RGB160x160_DualGate);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");
@@ -62,6 +63,7 @@ void loop(void) {
   Test501();
   Test502();
   Test503();
+  Test504();
   EndTests();
 }
 // End OF MAIN
@@ -108,6 +110,7 @@ void Test501(void) {
   }
   myTFT.TFTsetScrollStart(0);  // reset
   myTFT.TFTScrollModeLeave();  // leave scroll mode
+  delay(TEST_DELAY);
   myTFT.fillScreen(myTFT.C_BLACK);
 }
 
@@ -148,35 +151,48 @@ void Test503() {
   char teststr2[] = "LCD on";
   char teststr3[] = "Sleep on";
   ColorBlock();
-  myTFT.writeCharString(25, 80, teststr1);
+  myTFT.writeCharString(25, 100, teststr1);
   delay(TEST_DELAY2);
 
   // Invert on and off
-  myTFT.TFTchangeInvertMode(true);
+  myTFT.TFTchangeInvertMode(false);
   Serial.println("Test 503-1: Invert on ");
   delay(TEST_DELAY5);
-  myTFT.TFTchangeInvertMode(false);
+  myTFT.TFTchangeInvertMode(true);
   Serial.println("Test 503-2: Invert off ");
   delay(TEST_DELAY5);
 
   // Display on and off
   myTFT.TFTenableDisplay(false);
   Serial.println("Test 503-3: Display off");
-  myTFT.writeCharString(25, 80, teststr2);
+  myTFT.writeCharString(25, 100, teststr2);
   delay(TEST_DELAY5);
   myTFT.TFTenableDisplay(true);
   Serial.println("Test 503-4: Turn Display back on");
   delay(TEST_DELAY5);
   // modes
-  myTFT.writeCharString(25, 80, teststr3);
+  myTFT.writeCharString(25, 100, teststr3);
   delay(TEST_DELAY5);
-  // 1. sleep mode
+  // sleep mode
   myTFT.TFTsetPowerMode(GC9D01_LTSM::PowerState_e::SleepNormalIdleOff);
   Serial.println("Test 503-7: Power mode Sleep ON Idle Off");
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   //back to sleep off - normal on - idle off
   myTFT.TFTsetPowerMode(GC9D01_LTSM::PowerState_e::NormalIdleOff);
+  delay(TEST_DELAY5);
+}
+
+void Test504() {
+  Serial.println("Test 504: Brightness");
+  char teststr[] = "brightness";
+  myTFT.writeCharString(25, 100, teststr);
+  delay(TEST_DELAY5);
+  myTFT.TFTsetBrightness(5); // min
+  delay(TEST_DELAY5);
+  myTFT.TFTsetBrightness(125); // mid
+  delay(TEST_DELAY5);
+  myTFT.TFTsetBrightness(250); // max
   delay(TEST_DELAY5);
 }
 

@@ -134,10 +134,10 @@ void GC9D01_LTSM::TFTGC9D01Initialize()
 		cmdInitSequence();
 		//TFTsetRotation(Degrees_0); // optional
 }
-// 
+
 /*!
-	@brief Toggle the invert mode
-	@param invert true invert off , false invert on
+	@brief Toggle the invert mode, inverted colours
+	@param invert true = invert off , false = invert on
 */
 void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
 	if(invert) {
@@ -156,25 +156,24 @@ void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
 	3 =  270 rotate
 */
 void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
-	uint8_t madctl = 0;
+	uint8_t madctl = MADCTL_FLAGS_t::BGR;
 	switch (mode) {
-		case Degrees_0 :
-			madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::BGR);
+		case Degrees_0 : // 0x00
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
-		case Degrees_90:
-			madctl = (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
+		case Degrees_90: // MX + MV 0x06
+			madctl |= (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MV); 
 			_width  =_heightStartTFT;
 			_height = _widthStartTFT;
 			break;
-		case Degrees_180:
-			madctl =(MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::BGR);
+		case Degrees_180:  //  MY + MX  0x0C
+			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX );
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
-		case Degrees_270:
-			madctl = (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::BGR);
+		case Degrees_270:  // MY + MV 0x0A
+			madctl |= (MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV); 
 			_width =_heightStartTFT;
 			_height = _widthStartTFT;
 			break;
@@ -187,15 +186,16 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 	@brief initialise the variables that define the size of the screen
 	@param width_TFT width in pixels
 	@param height_TFT height in pixels
+	@param resolution Current Resolution see enum gc9d01_resolution_e for options 
 	@note  The offsets can be adjusted for any issues with manufacture tolerance/defects
 */
-void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT)
+void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT, Resolution_e resolution)
 {
-
 	_width = width_TFT;
 	_height = height_TFT;
 	_widthStartTFT = width_TFT;
 	_heightStartTFT = height_TFT;
+	_currentResolution = resolution;
 }
 
 /*!
@@ -245,7 +245,8 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	writeCommand(GC9D01_BLANK_PORCH_CTRL);
 	writeData(0x0D);
 	writeData(0x0D);
-
+	writeData(0x00); //Third parameter must write but is not valid
+	
 	 // Undocumented in datasheet registers
 	writeCommand(0x60);
 	uint8_t seqReg2[] = {0x38, 0x0F, 0x79, 0x67};
@@ -273,8 +274,17 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	spiWriteDataBuffer(segReg7, sizeof(segReg7));
 
 	writeCommand(GC9D01_DUAL_SINGLE);
-	writeData(0x01);
-
+	switch (_currentResolution)
+	{
+		case Resolution_e::RGB160x160_DualGate:
+		case Resolution_e::RGB120x160_DualGate:
+			writeData(0x01);// Dual-Single Gate Select (BFh) 0=>Single gate
+		break;
+		case Resolution_e::RGB80x160_SingleGate:
+		case Resolution_e::RGB40x160_SingleGate:
+			writeData(0x00); // Single gate
+		break;
+	}
 	 // Undocumented in datasheet registers
 	writeCommand(0xF9);
 	writeData(0x40);
@@ -316,7 +326,7 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
 
 	writeCommand(GC9D01_MADCTL);
-	writeData(0x00);
+	writeData(0x08); // BGR
 	writeCommand(GC9D01_SLPOUT);
 	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
 	writeCommand(GC9D01_DISPON);
@@ -482,7 +492,7 @@ void GC9D01_LTSM::TFTsetPowerMode(PowerState_e mode) {
 void GC9D01_LTSM::TFTsetBrightness(uint8_t level)
 {
 	writeCommand(GC9D01_SETCTRL);
-	writeData(0x2C); // Brightness registers are active, Display Dimming is on Backlight On
+	writeData(0x24); // Brightness registers are active, Display Dimming is on, Backlight Off
 	writeCommand(GC9D01_SETBRIGHT);
 	writeData(level);
 }

@@ -49,7 +49,9 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, GC9D01_LTSM::Resolution_e::RGB160x160_DualGate);
+  // Display type, multiple choice see readme
+  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");
@@ -146,8 +148,8 @@ void Test502() {
 void Test503() {
   Serial.println("Test 503: Mode Tests");
   char teststr1[] = "Invert";
-  char teststr2[] = "LCD on";
-  char teststr3[] = "Sleep on";
+  char teststr2[] = "LCD on/off";
+  char teststr3[] = "Sleep on/off";
   ColorBlock();
   myTFT.writeCharString(25, 100, teststr1);
   delay(TEST_DELAY2);
@@ -157,28 +159,29 @@ void Test503() {
   Serial.println("Test 503-1: Invert on ");
   delay(TEST_DELAY5);
   myTFT.TFTchangeInvertMode(true);
-  Serial.println("Test 503-2: Invert off ");
+  Serial.println("Test 503-1: Invert off ");
   delay(TEST_DELAY5);
 
   // Display on and off
   myTFT.TFTenableDisplay(false);
-  Serial.println("Test 503-3: Display off");
+  Serial.println("Test 503-2: Display off");
   myTFT.writeCharString(25, 100, teststr2);
   delay(TEST_DELAY5);
   myTFT.TFTenableDisplay(true);
-  Serial.println("Test 503-4: Turn Display back on");
+  Serial.println("Test 503-2: Turn Display back on");
   delay(TEST_DELAY5);
-  // modes
+
+  // sleep mode
   myTFT.writeCharString(25, 100, teststr3);
   delay(TEST_DELAY5);
-  // sleep mode
   myTFT.TFTsetPowerMode(GC9D01_LTSM::PowerState_e::SleepNormalIdleOff);
-  Serial.println("Test 503-7: Power mode Sleep ON Idle Off");
+  Serial.println("Test 503-3: Power mode Sleep ON Idle Off");
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   //back to sleep off - normal on - idle off
   myTFT.TFTsetPowerMode(GC9D01_LTSM::PowerState_e::NormalIdleOff);
   delay(TEST_DELAY5);
+  Serial.println("Done!");
 }
 
 

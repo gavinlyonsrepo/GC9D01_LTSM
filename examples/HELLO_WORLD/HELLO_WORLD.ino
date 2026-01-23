@@ -45,10 +45,12 @@ void setup(void) {
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, GC9D01_LTSM::Resolution_e::RGB160x160_DualGate);
-  //myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT);
+  // Display type, multiple choice see readme
+  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
   // ===
   myTFT.TFTGC9D01Initialize();
+
   Serial.println("Start");
 }
 

@@ -157,28 +157,23 @@ void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
 	3 =  270 rotate
 */
 void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
-	uint8_t madctl = MADCTL_FLAGS_t::BGR;
+	uint8_t madctl =0;
 	switch (mode) {
 		case Degrees_0 : // 0x00
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
 		case Degrees_90:
-			//OG gc9A01 MV
-			//2nd madctl |= (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MV);   // MX + MV 0x60
 			madctl |= (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::ML);
 			_width  =_heightStartTFT;
 			_height = _widthStartTFT;
 			break;
 		case Degrees_180:  
-			// OG gc9a01 MADCTL_FLAGS_t::MY 
-			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX ); //  MY + MX  0xC0
+			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX );
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
 			break;
 		case Degrees_270:  
-			// OG (MADCTL_FLAGS_t::MX | MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV 
-			// 2nd madctl |= (MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::MV); // MY + MV 0xA0
 			madctl |= (MADCTL_FLAGS_t::MV |MADCTL_FLAGS_t::MX |MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::ML );
 			_width =_heightStartTFT;
 			_height = _widthStartTFT;
@@ -332,7 +327,7 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
 
 	writeCommand(GC9D01_MADCTL);
-	writeData(0x08); // BGR
+	writeData(0x00);
 	writeCommand(GC9D01_SLPOUT);
 	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
 	writeCommand(GC9D01_DISPON);

@@ -52,6 +52,8 @@ void setup(void) {
   myTFT.TFTGC9D01Initialize();
 
   Serial.println("Start");
+  //Serial.println(myTFT.getTextCharPixelOrBuffer());
+  //myTFT.setTextCharPixelOrBuffer(true);
 }
 
 // main

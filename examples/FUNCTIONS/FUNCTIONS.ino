@@ -39,7 +39,7 @@ void setup(void) {
   int8_t RST_TFT = 4;
   int8_t CS_TFT = 15;
   if (bhardwareSPI == true) {          // hw spi
-    uint32_t TFT_SCLK_FREQ = 8000000;  // Spi freq in Hertz
+    uint32_t TFT_SCLK_FREQ = 1000000;  // Spi freq in Hertz
     myTFT.TFTsetupGPIO_SPI(TFT_SCLK_FREQ, RST_TFT, DC_TFT, CS_TFT);
   } else {                        // sw spi
     uint16_t SWSPICommDelay = 0;  // optional SW SPI GPIO delay in uS
@@ -60,6 +60,8 @@ void setup(void) {
 // MAIN loop
 void loop(void) {
   myTFT.setFont(FontRetro);
+  myTFT.fillScreen(myTFT.C_RED);
+  delay(TEST_DELAY);
   Test500();
   Test501();
   Test502();
@@ -116,14 +118,14 @@ void Test501(void) {
 
 void Test502() {
   Serial.println("Test 502: Rotate");
-  char teststr0[] = "R 0";    //normal
-  char teststr1[] = "R 90";   // 90
-  char teststr2[] = "R 180";  // 180
-  char teststr3[] = "R 270";  // 270
+  char teststr0[] = "Rotat 0";    //normal
+  char teststr1[] = "Rotate 90";   // 90
+  char teststr2[] = "Rotate 180";  // 180
+  char teststr3[] = "Rotate 270";  // 270
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_0);
-  myTFT.writeCharString(25, 80, teststr0);
+  myTFT.writeCharString(15, 80, teststr0);
   delay(TEST_DELAY2);
 
   myTFT.fillScreen(myTFT.C_BLACK);

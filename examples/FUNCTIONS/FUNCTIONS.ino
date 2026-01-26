@@ -118,10 +118,10 @@ void Test501(void) {
 
 void Test502() {
   Serial.println("Test 502: Rotate");
-  char teststr0[] = "Rotat 0";    //normal
-  char teststr1[] = "Rotate 90";   // 90
-  char teststr2[] = "Rotate 180";  // 180
-  char teststr3[] = "Rotate 270";  // 270
+  char teststr0[] = "R 0";    //normal
+  char teststr1[] = "R 90";   // 90
+  char teststr2[] = "R 180";  // 180
+  char teststr3[] = "R 270";  // 270
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_0);

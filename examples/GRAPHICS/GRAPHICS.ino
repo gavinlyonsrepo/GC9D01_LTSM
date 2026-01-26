@@ -6,6 +6,7 @@
 			     dislib16_ADVANCED_GRAPHICS_ENABLE must be commented in.
 	@note    See USER OPTIONS 1-2 in SETUP function
 	@test 
+  -# Test 901 Lines and Pixels
 	-# Test 902 rectangles
 	-# Test 903 Circle
 	-# Test 904 Triangles
@@ -65,6 +66,7 @@ void setup(void) {
 
 // MAIN loop
 void loop(void) {
+  Test901();
   Test902();
   Test903();
   Test904();
@@ -87,6 +89,34 @@ void EndTests(void) {
   Serial.println("End");
   while (1) {};
 }
+
+void Test901(void)
+{
+	Serial.println("Test 901: lines");
+  delay(TEST_DELAY);
+	myTFT.fillScreen(myTFT.C_BLACK);
+	myTFT.drawPixel(85, 5, myTFT.C_RED);
+	myTFT.drawPixel(87, 7, myTFT.C_GREEN);
+	myTFT.drawPixel(89, 9, myTFT.C_BLUE);
+	// Horizontal lines (2)
+	myTFT.drawFastHLine(10, 20, 140, myTFT.C_RED);
+	myTFT.drawFastHLine(10, 40, 140, myTFT.C_RED);
+	// Vertical lines (2)
+	myTFT.drawFastVLine(20, 10, 140, myTFT.C_GREEN);
+	myTFT.drawFastVLine(40, 10, 140, myTFT.C_GREEN);
+	// Diagonal lines (2)
+	myTFT.drawLine(10, 10, 150, 150, myTFT.C_BLUE);
+	myTFT.drawLine(150, 10, 10, 150, myTFT.C_BLUE);
+	// Shallow slope lines (2)
+	myTFT.drawLine(10, 80, 150, 100, myTFT.C_YELLOW);
+	myTFT.drawLine(10, 100, 150, 80, myTFT.C_YELLOW);
+	// Steep slope lines (2)
+	myTFT.drawLine(80, 10, 100, 150, myTFT.C_CYAN);
+	myTFT.drawLine(100, 10, 80, 150, myTFT.C_CYAN);
+  delay(TEST_DELAY5);
+	myTFT.fillScreen(myTFT.C_BLACK);
+}
+
 
 void Test902(void) {
   Serial.println("Test 902: rectangles");

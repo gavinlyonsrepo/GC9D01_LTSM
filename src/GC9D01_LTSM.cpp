@@ -211,16 +211,15 @@ uint16_t GC9D01_LTSM::TFTSwSpiGpioDelayGet(void){return _SWSPIGPIODelay;}
 */
 void  GC9D01_LTSM::TFTSwSpiGpioDelaySet(uint16_t CommDelay){_SWSPIGPIODelay = CommDelay;}
 
-
-/*!
-	@brief Command Initialization sequence for GC9D01 display
-*/
+// /*!
+// 	@brief Command Initialization sequence for GC9D01 display
+// */
 void GC9D01_LTSM::cmdInitSequence(void)
 {
 	writeCommand(GC9D01_INREGEN1);
 	writeCommand(GC9D01_INREGEN2); 
 
-	// Undocumented in datasheet registers
+	// Enabling the internal register: Undocumented in datasheet registers
 	constexpr uint8_t startCmd = 0x80;
 	constexpr uint8_t endCmd   = 0x8F;
 	for (uint8_t cmd = startCmd; cmd <= endCmd; ++cmd)
@@ -229,26 +228,28 @@ void GC9D01_LTSM::cmdInitSequence(void)
 		writeData(0xFF);
 	}
 
-	writeCommand(GC9D01_COLMOD);
-	writeData(0x05);
+    writeCommand(GC9D01_COLMOD);
+	writeData(0x55); // 16bit/pixel control
 	writeCommand(GC9D01_INVERSION);
-	writeData(0x01);
+	writeData(0x00); 
 
-	// Undocumented in datasheet registers
+	// Change frame rate: Undocumented in datasheet registers
 	writeCommand(0x74); 
 	uint8_t seqReg1[] = {0x02, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00};
 	spiWriteDataBuffer(seqReg1, sizeof(seqReg1));
+
+	// Internal voltage regulation: Undocumented in datasheet registers
 	writeCommand(0x98); 
 	writeData(0x3E);
 	writeCommand(0x99);
 	writeData(0x3E);
 
+	// Blanking Porch Control
 	writeCommand(GC9D01_BLANK_PORCH_CTRL);
-	writeData(0x0D);
-	writeData(0x0D);
-	writeData(0x00); //Third parameter must write but is not valid
+	uint8_t segBlankCTR[] = {0x0D, 0x0D, 0x00};
+	spiWriteDataBuffer(segBlankCTR, sizeof(segBlankCTR));
 	
-	 // Undocumented in datasheet registers
+	 // Timing Gap: Undocumented in datasheet registers
 	writeCommand(0x60);
 	uint8_t seqReg2[] = {0x38, 0x0F, 0x79, 0x67};
 	spiWriteDataBuffer(seqReg2, sizeof(seqReg2));
@@ -265,7 +266,7 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	writeData(0x00);
 	writeData(0x00);
 	writeCommand(0x6C);
-	uint8_t segReg6[] = {0x22, 0x02, 0x22, 0x02, 0x22, 0x02, 0x22, 0x22, 0x50};
+	uint8_t segReg6[] = {0x22, 0x02, 0x22, 0x02, 0x22, 0x22, 0x50};
 	spiWriteDataBuffer(segReg6, sizeof(segReg6));
 	writeCommand(0x6E);
 	uint8_t segReg7[] = {0x03, 0x03, 0x01, 0x01, 0x00, 0x00, 0x0F, 0x0F, 0x0D, 0x0D,
@@ -273,6 +274,10 @@ void GC9D01_LTSM::cmdInitSequence(void)
 						 0x00, 0x0A, 0x0A, 0x0C, 0x0C, 0x0E, 0x0E,
 						 0x10, 0x10, 0x00, 0x00, 0x02, 0x02, 0x04, 0x04};
 	spiWriteDataBuffer(segReg7, sizeof(segReg7));
+
+	// The internal voltage adjustment begins
+	// TODO
+	// Internal voltage setting completed
 
 	writeCommand(GC9D01_DUAL_SINGLE);
 	switch (_currentResolution)
@@ -286,22 +291,27 @@ void GC9D01_LTSM::cmdInitSequence(void)
 			writeData(0x00); // Single gate
 		break;
 	}
-	 // Undocumented in datasheet registers
+	 // Adjustments related to SOU : Undocumented in datasheet registers
 	writeCommand(0xF9);
 	writeData(0x40);
+	//Voltage regulation vreg : Undocumented in datasheet registers
 	writeCommand(0x9b);
 	writeData(0x3b);
 	writeCommand(0x93);
 	uint8_t segReg8[] = {0x33, 0x7F, 0x00};
 	spiWriteDataBuffer(segReg8, sizeof(segReg8));
+
+	// Undocumented in datasheet registers
 	writeCommand(0x7E);
 	writeData(0x30);
+    // VGH/VGL CLK adjustment 70，71h : Undocumented in datasheet registers
 	writeCommand(0x70);
 	uint8_t segReg9[] = {0x0D, 0x02, 0x08, 0x0D, 0x02, 0x08};
 	spiWriteDataBuffer(segReg9, sizeof(segReg9));
 	writeCommand(0x71);
 	uint8_t segReg10[] = {0x0D, 0x02, 0x08};
 	spiWriteDataBuffer(segReg10, sizeof(segReg10));
+	// Internal voltage regulation : Undocumented in datasheet registers
 	writeCommand(0x91);
 	writeData(0x0E);
 	writeData(0x09);
@@ -313,26 +323,28 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	writeCommand(GC9D01_VREG2A_CTRL);
 	writeData(0x3c);
 
-	writeCommand(GC9D01_GAMMA1);
+	writeCommand(GC9D01_GAMMA1); // 0xF0
 	uint8_t seqGamma1[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x38};
 	spiWriteDataBuffer(seqGamma1, sizeof(seqGamma1));
-	writeCommand(GC9D01_GAMMA3);
+	writeCommand(GC9D01_GAMMA3); // 0xF2
 	uint8_t seqGamma3[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x34};
 	spiWriteDataBuffer(seqGamma3, sizeof(seqGamma3));
-	writeCommand(GC9D01_GAMMA2);
+	writeCommand(GC9D01_GAMMA2); // 0xF1
 	uint8_t seqGamma2[] = {0x4B, 0xB8, 0x7B, 0x34, 0x35, 0xEF};
 	spiWriteDataBuffer(seqGamma2, sizeof(seqGamma2));
-	writeCommand(GC9D01_GAMMA4);
+	writeCommand(GC9D01_GAMMA4); // 0xF3
 	uint8_t seqGamma4[] = {0x47, 0xB4, 0x72, 0x34, 0x35, 0xDA};
 	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
 
+
 	writeCommand(GC9D01_MADCTL);
-	writeData(0x00);
+	writeData(0x00); 
 	writeCommand(GC9D01_SLPOUT);
 	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
 	writeCommand(GC9D01_DISPON);
+	MILLISEC_DELAY(20);
+	writeCommand(GC9D01_CONTINUE);
 }
-
 
 /*!
   @brief SPI displays set an address window rectangle for blitting pixels
@@ -345,10 +357,16 @@ void GC9D01_LTSM::cmdInitSequence(void)
 void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h)
 {	
 	//if drawing a single pixel we need do this to avoid a blank pixel for this device
-	if (w - x1 == 1)  {w = x1;}
-	if( h - y1 == 1)  {h = y1;}
+	const bool singlePixel =
+		((w == x1 + 1) && (h == y1 + 1));
+
+	if (singlePixel) {
+		w = x1;
+		h = y1;
+	}
+
 	uint8_t x1Higher = (x1 >> 8) ;
-	uint8_t x1Lower  = (x1 &  0xFF);
+	uint8_t x1Lower  = (x1 & 0xFF);
 	uint8_t x2Higher = (w >> 8);
 	uint8_t x2Lower  = (w &  0xFF);
 	uint8_t seqCASET[]    {x1Higher ,x1Lower,x2Higher,x2Lower};
@@ -362,7 +380,9 @@ void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h
 	writeCommand(GC9D01_RASET); //Row address set
 	spiWriteDataBuffer(seqRASET, sizeof(seqRASET));
 	writeCommand(GC9D01_RAMWR); // Write to RAM
+
 }
+
 
 /*!
 	@brief This method defines the Vertical Scrolling Area of the display where:

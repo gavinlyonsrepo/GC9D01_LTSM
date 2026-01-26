@@ -1,8 +1,10 @@
 /*!
 	@file   HELLO_WORLD.ino
 	@author Gavin Lyons
-	@brief  Example file for GC9D01_LTSM arduino library. Test Hello World.
-	@note   See USER OPTIONS 1-2 in SETUP function
+	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
+	@note   See USER OPTIONS 1-2 in SETUP function, 
+          "Hello" is printed in text row buffer mode
+          "World" is printed in text draw pixel by pixel mode
 	@test
 		-# Test 101 Print out Hello world  
 */
@@ -10,7 +12,7 @@
 // libraries
 #include "GC9D01_LTSM.hpp"
 // Fonts needed
-#include "fonts_LTSM/FontArialBold_LTSM.hpp"
+#include <fonts_LTSM/FontGroTesk_LTSM.hpp>
 
 ///@cond
 
@@ -52,8 +54,6 @@ void setup(void) {
   myTFT.TFTGC9D01Initialize();
 
   Serial.println("Start");
-  //Serial.println(myTFT.getTextCharPixelOrBuffer());
-  //myTFT.setTextCharPixelOrBuffer(true);
 }
 
 // main
@@ -65,9 +65,18 @@ void loop(void) {
 void Test100(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
-  myTFT.setCursor(25, 80);
-  myTFT.setFont(FontArialBold);
+  myTFT.setFont(FontGroTesk);
+  myTFT.setCursor(25, 40);
   myTFT.print("Hello");
+
+  // Switch to pixel by pixel test 
+  //================
+  Serial.println(myTFT.getTextCharPixelOrBuffer());
+  myTFT.setTextCharPixelOrBuffer(true);
+  myTFT.setCursor(25, 80);
+  myTFT.print("World");
+  //===================
+  delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);
   delay(TEST_DELAY1);

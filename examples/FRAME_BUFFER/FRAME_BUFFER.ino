@@ -3,9 +3,9 @@
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino librarySee USER OPTIONS 0-2 in SETUP function
 			    dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
-			    or it will not compile , requires usable heap memory of (160X160X2) = 51,200 bytes
+			    or it will not compile , requires usable heap memory of (160x160x2) = 51,200 bytes
 	@test
-		-# Test 1500 Frame buffer mode.
+		-# Test 150X Frame buffer mode.
 */
 
 // libraries
@@ -13,6 +13,8 @@
 // Fonts needed
 #include "fonts_LTSM/FontArialRound_LTSM.hpp"
 
+// bitmap test data
+#include "bitmap_test_data_LTSM/Bitmap_TEST_Data_16color2.hpp"
 /// @cond
 
 #ifndef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
@@ -62,6 +64,11 @@ void setup(void) {
 // MAIN loop
 void loop(void) {
   Test1500();
+  Test1501();
+  Test1502();
+  Test1503();
+  Test1504();
+  Test1505();
   EndTests();
 }
 // End OF MAIN 
@@ -83,12 +90,13 @@ void ScreenReset(void) {
 
 void Test1500(void) {
 
-  Serial.println("Test 0: Color Test");
+  Serial.println("Test: Color Test");
   ColorBlock();
+  myTFT.writeBuffer();
   delay(5000);
   myTFT.fillScreen(myTFT.C_BLACK);
   
-  Serial.println("Test1");
+  Serial.println("Test: clear buffer RGB");
   myTFT.clearBuffer(myTFT.C_RED);
   myTFT.writeBuffer();
   delay(1000);
@@ -99,13 +107,15 @@ void Test1500(void) {
   myTFT.writeBuffer();
   delay(1000);
 
+  Serial.println("Test: text");
   myTFT.clearBuffer(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
   myTFT.setCursor(15, 50);
   myTFT.setFont(FontArialRound);
-  myTFT.print("Buffer Mode");
+  myTFT.print("Buffer Mode text test");
   myTFT.writeBuffer();
   delay(5000);
+  myTFT.clearBuffer(myTFT.C_BLACK);
 }
 
 void ColorBlock(void) {
@@ -114,5 +124,94 @@ void ColorBlock(void) {
   myTFT.fillRoundRect(56, 50, 24, 48, 8, myTFT.C_BLUE);
   myTFT.fillRoundRect(80, 50, 24, 48, 8, myTFT.C_YELLOW);
   myTFT.fillRoundRect(104, 50, 24, 48, 8, myTFT.C_WHITE);
+}
+
+void Test1501(void)
+{
+	Serial.println("Test lines");
+  delay(1000);
+	myTFT.clearBuffer(myTFT.C_BLACK);
+
+	myTFT.drawPixel(85, 5, myTFT.C_RED);
+	myTFT.drawPixel(87, 7, myTFT.C_GREEN);
+	myTFT.drawPixel(89, 9, myTFT.C_BLUE);
+	// Horizontal lines (2)
+	myTFT.drawFastHLine(10, 20, 140, myTFT.C_RED);
+	myTFT.drawFastHLine(10, 40, 140, myTFT.C_RED);
+	// Vertical lines (2)
+	myTFT.drawFastVLine(20, 10, 140, myTFT.C_GREEN);
+	myTFT.drawFastVLine(40, 10, 140, myTFT.C_GREEN);
+	// Diagonal lines (2)
+	myTFT.drawLine(10, 10, 150, 150, myTFT.C_BLUE);
+	myTFT.drawLine(150, 10, 10, 150, myTFT.C_BLUE);
+	// Shallow slope lines (2)
+	myTFT.drawLine(10, 80, 150, 100, myTFT.C_YELLOW);
+	myTFT.drawLine(10, 100, 150, 80, myTFT.C_YELLOW);
+	// Steep slope lines (2)
+	myTFT.drawLine(80, 10, 100, 150, myTFT.C_CYAN);
+	myTFT.drawLine(100, 10, 80, 150, myTFT.C_CYAN);
+  myTFT.writeBuffer();
+  delay(5000);
+  myTFT.clearBuffer(myTFT.C_BLACK);
+}
+
+
+void Test1502(void) {
+  Serial.println("Test: rectangles");
+  myTFT.drawRectWH(45, 25, 20, 20, myTFT.C_RED);
+  myTFT.fillRect(110, 25, 20, 20, myTFT.C_GREEN);
+  myTFT.drawRoundRect(15, 80, 70, 60, 20, myTFT.C_CYAN);
+  myTFT.fillRoundRect(110, 80, 40, 50, 10, myTFT.C_WHITE);
+  myTFT.writeBuffer();
+  delay(5000);
+  myTFT.clearBuffer(myTFT.C_BLACK);
+}
+
+void Test1503(void) {
+  Serial.println("Test: Triangles and circles");
+  myTFT.drawCircle(40, 40, 25, myTFT.C_GREEN);
+  myTFT.fillCircle(80, 80, 25, myTFT.C_YELLOW);
+  myTFT.writeBuffer();
+  delay(5000);
+  myTFT.clearBuffer(myTFT.C_BLACK);
+}
+
+void Test1504(void) {
+  myTFT.drawTriangle(5, 80, 50, 40, 95, 80, myTFT.C_CYAN);
+  myTFT.fillTriangle(55, 120, 100, 90, 127, 120, myTFT.C_RED);
+  myTFT.writeBuffer();
+  delay(5000);
+  myTFT.clearBuffer(myTFT.C_BLACK);
+}
+
+void Test1505(void)
+{
+  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+  delay(2000);
+  myTFT.drawSpriteData(55, 55, SpriteTest16, 32, 32, myTFT.C_LBLUE, false);
+  myTFT.drawSpriteData(90, 90, SpriteTest16, 32, 32, myTFT.C_LBLUE, true);
+  myTFT.writeBuffer();
+  delay(5000);
+
+  myTFT.clearBuffer(myTFT.C_BLACK);
+  myTFT.writeBuffer();
+  myTFT.TFTsetRotation(myTFT.Degrees_90);
+  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+  myTFT.writeBuffer();
+  delay(5000);
+
+  myTFT.clearBuffer(myTFT.C_BLACK);
+  myTFT.writeBuffer();
+  myTFT.TFTsetRotation(myTFT.Degrees_180);
+  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+  myTFT.writeBuffer();
+  delay(5000);
+
+  myTFT.clearBuffer(myTFT.C_BLACK);
+  myTFT.writeBuffer();
+  myTFT.TFTsetRotation(myTFT.Degrees_270);
+  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+  myTFT.writeBuffer();
+  delay(5000);
 }
 /// @endcond

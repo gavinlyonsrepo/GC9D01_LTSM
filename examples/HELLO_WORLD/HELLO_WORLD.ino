@@ -52,7 +52,7 @@ void setup(void) {
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
   // ===
   myTFT.TFTGC9D01Initialize();
-
+  
   Serial.println("Start");
 }
 

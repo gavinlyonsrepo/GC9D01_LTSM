@@ -2,7 +2,7 @@
 	@file    GRAPHICS.ino
 	@brief   Example file for GC9A01_LTSM display Library test file, tests : graphics.
 	@author  Gavin Lyons.
-	@details For graphics tests 905-test909 to work, 
+	@details For graphics tests 905-909 to work, 
 			     dislib16_ADVANCED_GRAPHICS_ENABLE must be commented in.
 	@note    See USER OPTIONS 1-2 in SETUP function
 	@test 

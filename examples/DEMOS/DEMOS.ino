@@ -4,6 +4,8 @@
 	@brief   Example file for GC9D01_LTSM arduino library. demo
 	@note   See USER OPTIONS 1-2 in SETUP function
 			    If dislib16_ADVANCED_GRAPHICS_ENABLE  is not enabled it will not compile
+          dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
+			    or it will not compile , requires usable heap memory of (160x160x2) = 51,200 bytes
 	@test
 		-# Test 408 gauge demo 
 */
@@ -15,8 +17,8 @@
 
 /// @cond
 
-#ifdef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
-#pragma message("gll: dislib16_ADVANCED_SCREEN_BUFFER_ENABLE is defined. This example is not for that mode")
+#ifndef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
+#pragma message("gll: dislib16_ADVANCED_SCREEN_BUFFER_ENABLE is not defined. it is required for this example")
 #endif
 #ifndef dislib16_ADVANCED_GRAPHICS_ENABLE
 #pragma message("gll: dislib16_ADVANCED_GRAPHICS_ENABLE is not defined. it is required for this demo")
@@ -50,6 +52,14 @@ void setup(void) {
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
   // ===
   myTFT.TFTGC9D01Initialize();
+  // set up buffer
+  if (myTFT.setBuffer() != DisLib16::Success){
+    Serial.println("buffer not set");
+    while(1){};
+  }
+  // NB set to use pixel mode for text                 
+  myTFT.setTextCharPixelOrBuffer(true); 
+
   Serial.println("Start");
 }
 
@@ -65,6 +75,9 @@ void loop(void) {
 	@brief  Stop testing and shutdown the TFT
 */
 void EndTests(void) {
+  myTFT.fillScreen(myTFT.C_BLACK);
+  myTFT.clearBuffer(myTFT.C_BLACK);
+  myTFT.destroyBuffer();
   myTFT.TFTPowerDown();
   Serial.println("End");
   while (1) {};
@@ -72,8 +85,7 @@ void EndTests(void) {
 
 //demo function
 void arcGauge(uint16_t countLimit) {
-  myTFT.setTextCharPixelOrBuffer(true);
-  myTFT.fillScreen(myTFT.C_BLACK);
+  myTFT.clearBuffer(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_YELLOW, myTFT.C_BLACK);
   printf("Arc Demo ends at : %u\n", countLimit);
   int16_t currentValue = 150;
@@ -94,25 +106,27 @@ void arcGauge(uint16_t countLimit) {
   myTFT.drawArc(x, y, radius, 11, 321.0f, 30.0f, myTFT.C_GREEN);
   drawGaugeMarkers(x, y, radius, 150.0f, 390.0f, 1.3f);
   drawGaugeMarkers(x, y, radius, 165.0f, 375.0f, 1.1f);
+  myTFT.writeBuffer();
 	// Initialize random generator , optional
 	// randomSeed(analogRead(A0));
   while (count++ < countLimit) {
     int step = random(-10, 11);  // Arduino built-in RNG
     currentValue += step;
     currentValue = constrain(currentValue, minValue, maxValue);
-    myTFT.setCursor(20, 125);
+    myTFT.setCursor(40, 125);
     if (oldValue != currentValue) {
       drawPointer(currentValue, oldValue, x, y, radius, myTFT.C_GREEN, myTFT.C_BLACK);
       oldValue = currentValue;
     }
     myTFT.print("Count: ");
     myTFT.print(count);
-    myTFT.setCursor(20, 145);
+    myTFT.setCursor(40, 145);
     myTFT.print("Value: ");
     sprintf(buffer, "%03d", currentValue);
     myTFT.print(buffer);
+    myTFT.writeBuffer();
   }
-  myTFT.fillScreen(myTFT.C_BLACK);
+  myTFT.clearBuffer(myTFT.C_BLACK);
 }
 
 void drawGaugeMarkers(uint16_t centerX, uint16_t centerY, uint16_t radius, int startAngle, int endAngle, float scaleFactor) {

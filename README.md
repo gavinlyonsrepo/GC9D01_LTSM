@@ -1,4 +1,11 @@
-# GC9D01 Readme - WORK IN PROGRESS - BETA
+# GC9D01 Readme 
+
+## Note 
+
+Library is in Beta. 
+Not all functions in default mode currently work fully.
+All functions in advanced buffer mode work.
+See 'Notes and Issues' section for list of problems. 
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/whitelight976)
 
@@ -15,6 +22,8 @@
 * [Tested](#tested)
 * [Output](#output)
 * [Notes and Issues](#notes-and-issues)
+	* [Function Status](#function-status)
+
 
 ## Overview
 
@@ -29,7 +38,7 @@ resolution of 160RGBx160 dots, comprising a 240-channel source driver, a 32-chan
 driver, 57,600 bytes GRAM for graphic display data of 160RGBx160 dots, and power supply
 circuit.
 
-1. Power modes, Invert, Scroll, Rotate, Bitmaps supported.
+1. Power modes, Invert, Scroll, Rotate supported.
 2. Hardware & software SPI
 3. Tested on 160x160 Round Display
 4. Arduino eco-system library.
@@ -37,7 +46,7 @@ circuit.
 6. Advanced graphics class included.
 7. Advanced frame buffer mode included.
 8. Bitmaps supported: 1, 8 and 16 bit.
-9. Hardware & software SPI options
+9. Sprites supported.
 10. [Project url link](https://github.com/gavinlyonsrepo/GC9D01_LTSM)
 
 * [DataSheet](https://buydisplay.com/download/ic/GC9D01N.pdf)
@@ -51,7 +60,7 @@ For now user will have to install the library into their libraries folder manual
 
 This library requires the Arduino library 'display16_LTSM' as a dependency. display16_LTSM library contains
 the graphics, bitmaps, and font methods as well as font data and bitmap test data. Its also 
-where the user sets options(debug, advanced graphics and frame buffer mode).
+where the user sets options(debug, advanced graphics and advanced buffer mode).
 The 'display16_LTSM' project and readme is at [URL github link.](https://github.com/gavinlyonsrepo/display16_LTSM)
 'display16_LTSM' is also written by author of this library. 
 
@@ -70,9 +79,13 @@ There are more examples there that can be ported easily. I will include more exa
 
 | Filename .ino | Function  | Note |
 | --- | --- | --- |
-| HELLO WORLD | Hello world basic use case | --- |
-| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| Screen Rotate not working yet|
-
+| HELLO WORLD | Hello world  | basic use case |
+| TEXT | testing fonts and text | --- |
+| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| --- |
+| GRAPHICS | testing graphics: shapes + lines | dislib16 ADVANCED GRAPHICS ENABLE must be enabled for all tests to work |
+| BITMAP| 1,8 & 16 bit bitmaps tests + bitmap FPS tests| Bitmap test data is stored in arrays |
+| DEMOS| A demo showing a gauge |dislib16 ADVANCED SCREEN BUFFER ENABLE + dislib16 ADVANCED GRAPHICS ENABLE must be enabled |
+| FRAME BUFFER | Testing frame Buffer mode | dislib16 ADVANCED SCREEN BUFFER ENABLE must be enabled user option 2 |
 
 ### SPI
 
@@ -133,4 +146,24 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Output
 
+Output of DEMOS.ino(Advance buffer mode):
+
+[![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)
+
 ## Notes and Issues
+
+### Function Status
+
+In Advanced buffer mode all functions are working with Display16_graphics_LTSM.
+See 'dependency' section readme for link to details of this mode. 
+
+In default mode functions not currently working are listed below:
+
+| Function            | Status     | Notes |
+|---------------------|------------|-------|
+| Draw text: row buffer mode |  Working  | the default and best text mode |
+| Draw text: pixel by pixel mode |Not working | Distorted text, missing pixels |
+| Bitmaps      |  Working  |  |
+| Sprites      | Not working |  |
+| Shapes & lines | Not fully working | Varying degrees of distortion, missing pixels | 
+| Rotation | Not fully working in all orientations | Distortions appearing |

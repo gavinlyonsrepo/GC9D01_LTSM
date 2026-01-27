@@ -1,13 +1,15 @@
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/whitelight976)
+
 # GC9D01 Readme 
 
 ## Note 
 
-Library is in Beta. 
-Not all functions in default mode currently work fully.
-All functions in advanced buffer mode work.
-See 'Notes and Issues' section for list of problems. 
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/whitelight976)
+1. This driver for GC9D01 LCD is in Beta. 
+2. The graphics library used has two modes, 'default mode' and 'advanced buffer mode'
+	See 'Dependency section' for link to graphics library readme. 
+3. Default mode : Not all functions currently work fully.
+4. Advanced buffer mode: All functions work.
+5. See 'Notes and Issues' section for list of problems with 'default mode' 
 
 ## Table of contents
 
@@ -154,10 +156,11 @@ Output of DEMOS.ino(Advance buffer mode):
 
 ### Function Status
 
-In Advanced buffer mode all functions are working with Display16_graphics_LTSM.
-See 'dependency' section readme for link to details of this mode. 
-
-In default mode functions not currently working are listed below:
+1. The graphics library used has two modes, 'default mode' and 'advanced buffer mode'
+	See 'Dependency section' for link to graphics library readme. 
+2. Advanced buffer mode: All functions work.
+3. Default mode : Not all functions currently work fully.
+	Functions not currently working are listed below:
 
 | Function            | Status     | Notes |
 |---------------------|------------|-------|

@@ -118,7 +118,7 @@ There are 4 options here user can adjust:
 4. 2D Pixel fix mode
 
 
-### USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)
+*USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)*
 
 The GC9D01 controller supports multiple display sizes and gate driving modes.  
 Select the correct enum value for your physical module.
@@ -133,7 +133,7 @@ init command sequence may have to be changed.
 | `RGB40x160_SingleGate` | 40×160   | Single | Very narrow bar-type or specialty modules   | Single-gate scanning  |
 
 
-#### USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)
+*USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)*
 
 Some GC9D01 modules may have a hardware quirk:  
 very narrow address windows (1-pixel wide or 1-pixel high) 

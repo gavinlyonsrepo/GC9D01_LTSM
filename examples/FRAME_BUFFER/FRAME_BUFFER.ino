@@ -1,11 +1,19 @@
 /*!
 	@file   FRAME_BUFFER.ino
 	@author Gavin Lyons
-	@brief  Example file for GC9D01_LTSM arduino librarySee USER OPTIONS 0-2 in SETUP function
-			    dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
-			    or it will not compile , requires usable heap memory of (160x160x2) = 51,200 bytes
+	@brief  Example file for GC9D01_LTSM arduino library : Advanced Frame buffer mode
+          See USER OPTIONS 0-2 in SETUP function
+            dislib16_ADVANCED_GRAPHICS_ENABLE and
+            dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
+            or it will not compile. 
+            These settings are in file :display16_common_LTSM.hpp
+            of graphics library. 
+            Requires usable heap memory of (160x160x2) = 51,200 bytes for buffer
 	@test
-		-# Test 150X Frame buffer mode.
+		-# Test 1500 Color + text
+    -# Test 1504 Lines + shapes
+    -# Test Bitmaps + rotate
+
 */
 
 // libraries
@@ -44,9 +52,11 @@ void setup(void) {
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  // Display type, multiple choice see readme
+  // Display type, 4 choice,  see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
+  // Pixel Draw mode type, 4 choices , see readme.  
+  GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType);
   // ===
   myTFT.TFTGC9D01Initialize();
 
@@ -187,6 +197,7 @@ void Test1504(void) {
 void Test1505(void)
 {
   myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+  myTFT.writeBuffer();
   delay(2000);
   myTFT.drawSpriteData(55, 55, SpriteTest16, 32, 32, myTFT.C_LBLUE, false);
   myTFT.drawSpriteData(90, 90, SpriteTest16, 32, 32, myTFT.C_LBLUE, true);

@@ -1,11 +1,14 @@
 /*!
-	@file   DEMOS.ino
+	@file   DEMO_TWO.ino
 	@author Gavin Lyons
 	@brief   Example file for GC9D01_LTSM arduino library. demo
 	@note   See USER OPTIONS 1-2 in SETUP function
-			    If dislib16_ADVANCED_GRAPHICS_ENABLE  is not enabled it will not compile
-          dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
-			    or it will not compile , requires usable heap memory of (160x160x2) = 51,200 bytes
+            dislib16_ADVANCED_GRAPHICS_ENABLE and
+            dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
+            or it will not compile. 
+            These settings are in file :display16_common_LTSM.hpp
+            of graphics library. 
+            Requires usable heap memory of (160x160x2) = 51,200 bytes for buffer
 	@test
 		-# Test 408 gauge demo 
 */
@@ -47,9 +50,11 @@ void setup(void) {
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  // Display type, multiple choice see readme
+  // Display type, 4 choice,  see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
+  // Pixel Draw mode type, 4 choices , see readme.  
+  GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType);
   // ===
   myTFT.TFTGC9D01Initialize();
   // set up buffer
@@ -120,7 +125,7 @@ void arcGauge(uint16_t countLimit) {
     }
     myTFT.print("Count: ");
     myTFT.print(count);
-    myTFT.setCursor(40, 145);
+    myTFT.setCursor(40, 140);
     myTFT.print("Value: ");
     sprintf(buffer, "%03d", currentValue);
     myTFT.print(buffer);

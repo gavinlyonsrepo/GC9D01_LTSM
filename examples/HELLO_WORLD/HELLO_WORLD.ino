@@ -2,9 +2,14 @@
 	@file   HELLO_WORLD.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
-	@note   See USER OPTIONS 1-2 in SETUP function, 
-          "Hello" is printed in text row buffer mode
-          "World" is printed in text draw pixel by pixel mode
+	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
+  @details We demonstrate the two different text draw modes:
+           "Hello" is printed in text local buffer mode, default. Much faster(5X) but creates 
+           a local character buffer for each
+           character which could cause problems with very large fonts used by MCU with low RAM.
+           "World" is printed in text draw pixel by pixel mode. The "FixType" variable in setup
+           will effect this draw mode. User can turn this off and it will be 2X faster but 
+           missing pixels may result depending on Display manufacture/varient. 
 	@test
 		-# Test 101 Print out Hello world  
 */
@@ -47,12 +52,13 @@ void setup(void) {
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  // Display type, multiple choice see readme
+  // Display type, 4 choice's, see readme.
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
+  // Pixel Draw mode type, 4 choices , see readme.  
+  GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType);
   // ===
   myTFT.TFTGC9D01Initialize();
-  
   Serial.println("Start");
 }
 
@@ -69,13 +75,13 @@ void Test100(void) {
   myTFT.setCursor(25, 40);
   myTFT.print("Hello");
 
-  // Switch to pixel by pixel test 
+  // Switch to pixel by pixel mode test 
   //================
   Serial.println(myTFT.getTextCharPixelOrBuffer());
   myTFT.setTextCharPixelOrBuffer(true);
+   //===================
   myTFT.setCursor(25, 80);
   myTFT.print("World");
-  //===================
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);

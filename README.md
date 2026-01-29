@@ -4,13 +4,6 @@
 
 ## Note 
 
-1. This driver for GC9D01 LCD is in Beta. 
-2. The graphics library used has two modes, 'default mode' and 'advanced buffer mode'
-	See 'Dependency section' for link to graphics library readme. 
-3. Default mode : Not all functions currently work fully.
-4. Advanced buffer mode: All functions work.
-5. See 'Notes and Issues' section for list of problems with 'default mode' 
-
 ## Table of contents
 
 * [Overview](#overview)
@@ -19,12 +12,11 @@
 * [Documentation](#documentation)
 * [Software](#software)
 	* [Examples](#examples)
-	* [SPI](#spi)
+	* [Setup](#setup)
 * [Hardware](#hardware)
 * [Tested](#tested)
 * [Output](#output)
 * [Notes and Issues](#notes-and-issues)
-	* [Function Status](#function-status)
 
 
 ## Overview
@@ -79,26 +71,27 @@ the dependency 'display16_LTSM' repository, [URL github link](https://github.com
 There are 2 example files included currently. This library is ported from [URL github link](https://github.com/gavinlyonsrepo/GC9A01_LTSM)
 There are more examples there that can be ported easily. I will include more examples in future. 
 
-| Filename .ino | Function  | Note |
-| --- | --- | --- |
-| HELLO WORLD | Hello world  | basic use case |
-| TEXT | testing fonts and text | --- |
-| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| --- |
-| GRAPHICS | testing graphics: shapes + lines | dislib16 ADVANCED GRAPHICS ENABLE must be enabled for all tests to work |
-| BITMAP| 1,8 & 16 bit bitmaps tests + bitmap FPS tests| Bitmap test data is stored in arrays |
-| DEMOS| A demo showing a gauge |dislib16 ADVANCED SCREEN BUFFER ENABLE + dislib16 ADVANCED GRAPHICS ENABLE must be enabled |
-| FRAME BUFFER | Testing frame Buffer mode | dislib16 ADVANCED SCREEN BUFFER ENABLE must be enabled user option 2 |
+| Filename .ino | Function | Advanced Graphics mode| Advanced buffer mode |
+| --- | --- | --- | --- |
+| HELLO WORLD | Hello world  | NO | NO |
+| TEXT | Fonts and text | NO | NO|
+| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| NO | NO |
+| DEMO_ONE| A demo showing a gauge | NO | NO |
+| BITMAP| 1,8 & 16 bit bitmaps tests + bitmap FPS tests| NO | NO |
+| GRAPHICS | Graphics: shapes + lines | YES | NO |
+| DEMO_TWO| A demo showing a gauge | YES | YES |
+| FRAME BUFFER | Advanced Buffer mode | YES | YES |
 
-### SPI
+### Setup
 
 In the example ino files. There are sections in "setup()" function
 where user can make adjustments.
 
-1. USER OPTION 1 GPIO, SPI_SPEED + TYPE
-2. USER OPTION 2 SCREEN SECTION
+1. USER OPTION 1 GPIO, SPI Speed + type
+2. USER OPTION 2 Screen Size, Resolution, Gate type and Missing Pixel Fix. 
 
 
-*USER OPTION 1 GPIO SPI SPEED*
+*GPIO SPI SPEED*
 
 Two different constructors which one is called depends on 'bhardwareSPI', 
 true for hardware spi, false for software SPI.
@@ -116,9 +109,58 @@ Setting this higher can be used to slow down Software SPI
 which may be beneficial on Fast MCU's.
 The 5 GPIO pins used. Any GPIO can be used for these.
 
-*USER OPTION 2 Screen size*
+*USER OPTIONS 2*
 
-User can adjust screen pixel height, screen pixel width and resolution(4 enum values available).
+4 options User can adjust:
+ 
+1. 2A screen pixel height 
+2. 2B screen pixel width 
+3. 2C Resolution and gate type. 
+4. 2D Pixel fix mode
+
+There are 4 options here:
+
+### USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)
+
+The GC9D01 controller supports multiple display sizes and gate driving modes.  
+Select the correct enum value for your physical module.
+Only tested on 160x160 round. Value of Inversion register(0xEC) in 
+init command sequence may have to be changed.
+
+| Enum Value                  | Resolution | Gate Mode |  Typical Module Description                  | Notes                              |
+|-----------------------------|------------|-----------|-|---------------------------------------------|------------------------------------|
+| `RGB160x160_DualGate`       | 160×160    | Dual      |  Most round GC9D01 displays            | **Default** – no need to set       |
+| `RGB120x160_DualGate`       | 120×160    | Dual      | Some rectangular / bar-type modules         | Dual-gate scanning                 |
+| `RGB80x160_SingleGate`      | 80×160     | Single    |  Smaller rectangular / bar displays          | Single-gate scanning               |
+| `RGB40x160_SingleGate`      | 40×160     | Single    | Very narrow bar-type or specialty modules   | Single-gate scanning               |
+
+
+#### USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)
+
+Some GC9D01 modules may have a hardware quirk:  
+very narrow address windows (1-pixel wide or 1-pixel high) 
+can cause missing pixels, gaps in vertical lines.
+When Setting up Library, It was discovered that when drawing pixel by pixel in vertical
+direction, some pixels went missing or changed color. The solution was to send the 
+pixel twice for drawPixel() and for drawFastVLine() to disable "fast burst mode".
+
+Advanced buffer mode: No problems, this setting is ignored.
+
+Default mode: 
+No problem with Bitmaps or drawing text in local buffer mode(default).
+Problems occur with certain functions: like drawing text when in pixel mode,
+certain shapes + lines and sprites. This fix slows these functions done.
+
+Behavior may depend on display module variant and manufacturer so 
+I made it optional to switch off. In the examples files set to default 'both'.
+See table for options
+
+| Mode    | Description   |Notes    |
+|--------------|---------|---------------|
+| Off    | Normal drawing (no workaround)  | Fastest, but may show gaps   |
+| DoublePixel | Double-pixel padding in `drawPixel()` | Fixes single pixels    |
+| VFastOff|Pixel-by-pixel only in `drawFastVLine()`| Forces slow vertical lines (no fast burst)|
+| Both    | Applies both fixes  | Default     |
 
 
 ## Hardware
@@ -146,6 +188,8 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Tested
 
+* ESP32 
+
 ## Output
 
 Output of DEMOS.ino(Advance buffer mode):
@@ -154,19 +198,3 @@ Output of DEMOS.ino(Advance buffer mode):
 
 ## Notes and Issues
 
-### Function Status
-
-1. The graphics library used has two modes, 'default mode' and 'advanced buffer mode'
-	See 'Dependency section' for link to graphics library readme. 
-2. Advanced buffer mode: All functions work.
-3. Default mode : Not all functions currently work fully.
-	Functions not currently working are listed below:
-
-| Function            | Status     | Notes |
-|---------------------|------------|-------|
-| Draw text: row buffer mode |  Working  | the default and best text mode |
-| Draw text: pixel by pixel mode |Not working | Distorted text, missing pixels |
-| Bitmaps      |  Working  |  |
-| Sprites      | Not working |  |
-| Shapes & lines | Not fully working | Varying degrees of distortion, missing pixels | 
-| Rotation | Not fully working in all orientations | Distortions appearing |

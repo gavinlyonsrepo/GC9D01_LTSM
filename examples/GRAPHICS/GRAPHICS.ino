@@ -4,6 +4,8 @@
 	@author  Gavin Lyons.
 	@details For graphics tests 905-909 to work, 
 			     dislib16_ADVANCED_GRAPHICS_ENABLE must be commented in.
+           this define is in display16_common_LTSM.hpp in graphics library
+           see Readme.
 	@note    See USER OPTIONS 1-2 in SETUP function
 	@test 
   -# Test 901 Lines and Pixels
@@ -55,9 +57,11 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-    // Display type, multiple choice see readme
+  // Display type, 4 choice,  see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
+  // Pixel Draw mode type, 4 choices , see readme.  
+  GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");
@@ -87,7 +91,7 @@ void EndTests(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTPowerDown();  // Power down device
   Serial.println("End");
-  while (1) {};
+  while(1) {};
 }
 
 void Test901(void)
@@ -98,7 +102,7 @@ void Test901(void)
 	myTFT.drawPixel(85, 5, myTFT.C_RED);
 	myTFT.drawPixel(87, 7, myTFT.C_GREEN);
 	myTFT.drawPixel(89, 9, myTFT.C_BLUE);
-	// Horizontal lines (2)
+	// Horizontal lines Fast (2)
 	myTFT.drawFastHLine(10, 20, 140, myTFT.C_RED);
 	myTFT.drawFastHLine(10, 40, 140, myTFT.C_RED);
 	// Vertical lines (2)
@@ -107,12 +111,10 @@ void Test901(void)
 	// Diagonal lines (2)
 	myTFT.drawLine(10, 10, 150, 150, myTFT.C_BLUE);
 	myTFT.drawLine(150, 10, 10, 150, myTFT.C_BLUE);
-	// Shallow slope lines (2)
-	myTFT.drawLine(10, 80, 150, 100, myTFT.C_YELLOW);
-	myTFT.drawLine(10, 100, 150, 80, myTFT.C_YELLOW);
-	// Steep slope lines (2)
-	myTFT.drawLine(80, 10, 100, 150, myTFT.C_CYAN);
-	myTFT.drawLine(100, 10, 80, 150, myTFT.C_CYAN);
+  // Horizontal lines drawLine(2)
+  myTFT.drawLine(80, 10, 80, 150, myTFT.C_CYAN);  
+  myTFT.drawLine(100, 10, 100, 150, myTFT.C_CYAN);
+  delay(TEST_DELAY5);
   delay(TEST_DELAY5);
 	myTFT.fillScreen(myTFT.C_BLACK);
 }

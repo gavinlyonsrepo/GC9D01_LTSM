@@ -39,7 +39,7 @@ void setup(void) {
   int8_t RST_TFT = 4;
   int8_t CS_TFT = 15;
   if (bhardwareSPI == true) {          // hw spi
-    uint32_t TFT_SCLK_FREQ = 1000000;  // Spi freq in Hertz
+    uint32_t TFT_SCLK_FREQ = 8000000;  // Spi freq in Hertz
     myTFT.TFTsetupGPIO_SPI(TFT_SCLK_FREQ, RST_TFT, DC_TFT, CS_TFT);
   } else {                        // sw spi
     uint16_t SWSPICommDelay = 0;  // optional SW SPI GPIO delay in uS
@@ -51,7 +51,9 @@ void setup(void) {
   // === USER OPTION 2 Screen Setup ===
   // Display type, multiple choice see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType);
+  // Pixel Draw mode type, 4 choices , see readme.  
+  GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");

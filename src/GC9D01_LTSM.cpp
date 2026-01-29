@@ -133,7 +133,6 @@ void GC9D01_LTSM::TFTGC9D01Initialize()
 		TFTHWSPIInitialize();
 	}
 		cmdInitSequence();
-		//TFTsetRotation(Degrees_0); // optional
 }
 
 /*!
@@ -190,13 +189,14 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 	@param resolution Current Resolution see enum gc9d01_resolution_e for options 
 	@note  The offsets can be adjusted for any issues with manufacture tolerance/defects
 */
-void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT, Resolution_e resolution)
+void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT, Resolution_e resolution, PixelFixMode_e pixelFixMode)
 {
 	_width = width_TFT;
 	_height = height_TFT;
 	_widthStartTFT = width_TFT;
 	_heightStartTFT = height_TFT;
 	_currentResolution = resolution;
+	_currentPixelFixMode = pixelFixMode;
 }
 
 /*!
@@ -228,11 +228,6 @@ void GC9D01_LTSM::cmdInitSequence(void)
 		writeData(0xFF);
 	}
 
-    writeCommand(GC9D01_COLMOD);
-	writeData(0x55); // 16bit/pixel control
-	writeCommand(GC9D01_INVERSION);
-	writeData(0x00); 
-
 	// Change frame rate: Undocumented in datasheet registers
 	writeCommand(0x74); 
 	uint8_t seqReg1[] = {0x02, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -246,7 +241,7 @@ void GC9D01_LTSM::cmdInitSequence(void)
 
 	// Blanking Porch Control
 	writeCommand(GC9D01_BLANK_PORCH_CTRL);
-	uint8_t segBlankCTR[] = {0x0D, 0x0D, 0x00};
+	uint8_t segBlankCTR[] = {0x0E, 0x0E, 0x00};
 	spiWriteDataBuffer(segBlankCTR, sizeof(segBlankCTR));
 	
 	 // Timing Gap: Undocumented in datasheet registers
@@ -277,7 +272,6 @@ void GC9D01_LTSM::cmdInitSequence(void)
 
 	// The internal voltage adjustment begins
 	// TODO
-	// Internal voltage setting completed
 
 	writeCommand(GC9D01_DUAL_SINGLE);
 	switch (_currentResolution)
@@ -285,12 +279,17 @@ void GC9D01_LTSM::cmdInitSequence(void)
 		case Resolution_e::RGB160x160_DualGate:
 		case Resolution_e::RGB120x160_DualGate:
 			writeData(0x01);// Dual-Single Gate Select (BFh) 0=>Single gate
+			writeCommand(GC9D01_INVERSION);
+			writeData(0x70); 
 		break;
 		case Resolution_e::RGB80x160_SingleGate:
 		case Resolution_e::RGB40x160_SingleGate:
 			writeData(0x00); // Single gate
+			writeCommand(GC9D01_INVERSION);
+			writeData(0x00); 
 		break;
 	}
+
 	 // Adjustments related to SOU : Undocumented in datasheet registers
 	writeCommand(0xF9);
 	writeData(0x40);
@@ -336,15 +335,24 @@ void GC9D01_LTSM::cmdInitSequence(void)
 	uint8_t seqGamma4[] = {0x47, 0xB4, 0x72, 0x34, 0x35, 0xDA};
 	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
 
-
+	writeCommand(GC9D01_COLMOD);
+	writeData(0x55); // 16bit/pixel control
+	writeCommand(GC9D01_FUNCTION_CTRL);
+	writeData(0x00);
+	writeData(0x00);
+	writeCommand(GC9D01_IFACE);
+	writeData(0xc0);
+	writeCommand(GC9D01_SPI2DATA);
+	writeData(0x00);
+	
 	writeCommand(GC9D01_MADCTL);
 	writeData(0x00); 
 	writeCommand(GC9D01_SLPOUT);
 	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
 	writeCommand(GC9D01_DISPON);
-	MILLISEC_DELAY(20);
 	writeCommand(GC9D01_CONTINUE);
 }
+
 
 /*!
   @brief SPI displays set an address window rectangle for blitting pixels
@@ -359,28 +367,25 @@ void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h
 	//if drawing a single pixel we need do this to avoid a blank pixel for this device
 	const bool singlePixel =
 		((w == x1 + 1) && (h == y1 + 1));
-
 	if (singlePixel) {
 		w = x1;
 		h = y1;
 	}
-
 	uint8_t x1Higher = (x1 >> 8) ;
 	uint8_t x1Lower  = (x1 & 0xFF);
 	uint8_t x2Higher = (w >> 8);
 	uint8_t x2Lower  = (w &  0xFF);
-	uint8_t seqCASET[]    {x1Higher ,x1Lower,x2Higher,x2Lower};
+	uint8_t seqCASET[4]  =  {x1Higher ,x1Lower,x2Higher,x2Lower};
 	uint8_t y1Higher = (y1 >> 8); 
 	uint8_t y1Lower  = (y1 &  0xFF);
 	uint8_t y2Higher = (h >> 8);
 	uint8_t y2Lower  = (h &  0xFF);
-	uint8_t seqRASET[]    {y1Higher,y1Lower,y2Higher,y2Lower};
+	uint8_t seqRASET[4]  =  {y1Higher,y1Lower,y2Higher,y2Lower};
 	writeCommand(GC9D01_CASET); //Column address set
 	spiWriteDataBuffer(seqCASET, sizeof(seqCASET));
 	writeCommand(GC9D01_RASET); //Row address set
 	spiWriteDataBuffer(seqRASET, sizeof(seqRASET));
-	writeCommand(GC9D01_RAMWR); // Write to RAM
-
+	writeCommand(GC9D01_RAMWR); //Write to RAM
 }
 
 
@@ -516,5 +521,98 @@ void GC9D01_LTSM::TFTsetBrightness(uint8_t level)
 	writeData(0x24); // Brightness registers are active, Display Dimming is on, Backlight Off
 	writeCommand(GC9D01_SETBRIGHT);
 	writeData(level);
+}
+
+/*!
+	@brief Draws a pixel at given x and y coordinate with specified color.
+	@param x The x coordinate
+	@param y The y coordinate
+	@param color The color of the pixel 565 16 Bit color
+	@note This method is virtual to support device-specific behavior.
+		On Some GC9D01 displays, a double-pixel write (sending the same color twice)
+		is necessary to reliably set a pixel due to controller limitations with
+		1×1 address windows, which can cause missing or corrupted pixels.
+*/
+void GC9D01_LTSM::drawPixel(uint16_t x, uint16_t y, uint16_t color)
+{
+		if ((x >= _width) || (y >= _height))
+		return;
+#ifdef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
+	// Calculate the index in the buffer
+	size_t index = (y * _width + x) * 2; // 2 bytes per pixel for RGB565
+	// Write the color to the buffer
+	_screenBuffer[index] = (uint8_t)(color >> 8);     // High byte
+	_screenBuffer[index + 1] = (uint8_t)(color & 0xFF); // Low byte
+#else
+	uint8_t high = color >> 8;
+	uint8_t low = color;
+	if (_currentPixelFixMode == PixelFixMode_e::DoublePixel ||
+		_currentPixelFixMode == PixelFixMode_e::Both)
+		{
+			setAddrWindow(x, y, x + 1, y + 1);
+			uint8_t TransmitBuffer[4]{high, low, high, low};
+			spiWriteDataBuffer(TransmitBuffer, 4);
+		}else{
+			setAddrWindow(x, y, x +1, y + 1);
+			uint8_t TransmitBuffer[2]{high, low};
+			spiWriteDataBuffer(TransmitBuffer, 2);
+		}
+#endif
+}
+
+/*!
+	@brief Draws a vertical line starting at (x,y) with height h.
+	@param x The starting x coordinate
+	@param y The starting y coordinate
+	@param h The height of the line
+	@param color The color of the line 565 16 Bit color
+	@note This method is virtual to support device-specific behavior.
+		On Some GC9D01 displays, Vertical lines need to be drawn pixel by pixel
+		( disabling fast vertical line drawing)
+		is necessary to reliably set a pixel due to controller limitations with
+		1×1 address windows, which can cause missing or corrupted pixels.
+*/
+void GC9D01_LTSM::drawFastVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t color)
+{
+	if ((x >= _width) || (y >= _height))
+		return;
+	if ((y + h - 1) >= _height)
+		h = _height - y;
+
+#ifdef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
+	for (uint16_t i = 0; i < h; i++)
+	{
+		drawPixel(x, y + i, color);
+	}
+#else
+	if (_currentPixelFixMode == PixelFixMode_e::VFastOff ||
+		_currentPixelFixMode == PixelFixMode_e::Both){
+		for (uint16_t i = 0; i < h; i++)
+		{
+			drawPixel(x, y + i, color);
+		}
+	}else{
+		uint8_t hi, lo;
+		hi = color >> 8;
+		lo = color;
+		setAddrWindow(x, y, x, y + h - 1);
+		DISPLAY16_DC_SetHigh;
+		spiStartTransaction();
+		while (h--)
+		{
+			spiWrite(hi);
+			spiWrite(lo);
+		}
+		spiEndTransaction();
+	}
+
+#endif
+}
+
+/*!
+	@brief Set the pixel padding fix mode
+*/
+void GC9D01_LTSM::TFTsetPixelFixMode(PixelFixMode_e mode){
+	_currentPixelFixMode = mode;
 }
 //**************** EOF *****************

@@ -49,11 +49,26 @@ public:
 		RGB40x160_SingleGate	 /**< 40RGB × 160, S61–S180, Single gate */
 	};
 	
+	/*!
+		* @brief User-selectable workaround mode for narrow-window quirks on some GC9D01 displays
+		*	i.e. missing pixels when drawing vertical lines or single pixel draws.
+		*   behaviour may depend on display module variant and manufacturer
+	*/
+	enum class PixelFixMode_e : uint8_t {
+		Off          = 0,   /**< Normal behavior – may show gaps, missing pixels*/
+		DoublePixel  = 1,   /**< Apply double-pixel padding only in drawPixel */
+		VFastOff     = 2,   /**< Apply pixel by pixel only in drawFastVLine, no fast draw */
+		Both         = 3    /**< Apply both fixes*/
+	};
+
 	virtual void setAddrWindow(uint16_t, uint16_t, uint16_t, uint16_t) override;
+	virtual void drawPixel(uint16_t x, uint16_t y, uint16_t color) override;
+	virtual void drawFastVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t color) override;
 
 	void TFTsetupGPIO_SPI(uint16_t CommDelay, int8_t rst, int8_t dc, int8_t cs, int8_t sclk, int8_t din);
 	void TFTsetupGPIO_SPI(uint32_t baudrate, int8_t rst, int8_t dc, int8_t cs);
-	void TFTInitScreenSize(uint16_t w = 160, uint16_t h = 160, Resolution_e r = Resolution_e::RGB160x160_DualGate);
+	void TFTInitScreenSize(uint16_t w = 160, uint16_t h = 160, 
+		Resolution_e r = Resolution_e::RGB160x160_DualGate, PixelFixMode_e p = PixelFixMode_e::Both);
 	void TFTGC9D01Initialize(void);
 	void TFTPowerDown(void);
 	uint16_t TFTSwSpiGpioDelayGet(void);
@@ -68,6 +83,7 @@ public:
 	void TFTsetScrollArea(uint16_t topFixed, uint16_t scrollArea, uint16_t bottomFixed);
 	void TFTsetScrollStart(uint16_t vsp);
 	void TFTScrollModeLeave(void);
+	void TFTsetPixelFixMode(PixelFixMode_e mode);
 
 private:
 	void TFTHWSPIInitialize(void);
@@ -77,6 +93,7 @@ private:
 	// Display 
 	PowerState_e _currentPowerState = PowerState_e::NormalIdleOff; /**< Enum to hold display mode */
 	Resolution_e  _currentResolution = Resolution_e::RGB160x160_DualGate ; /**< enum to hold display resolution */
+	PixelFixMode_e _currentPixelFixMode = PixelFixMode_e::Both; /**< enum to hold pixel fix mode */
 	bool _displayOn = false; /**< Enum to hold display on/off status */
 	const uint16_t _sleepDelay = 120; /**< Sleep delay in ms, datasheet 4.2.4. */
 	// SPI

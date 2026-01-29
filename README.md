@@ -68,8 +68,7 @@ the dependency 'display16_LTSM' repository, [URL github link](https://github.com
 
 ### Examples
 
-There are 2 example files included currently. This library is ported from [URL github link](https://github.com/gavinlyonsrepo/GC9A01_LTSM)
-There are more examples there that can be ported easily. I will include more examples in future. 
+There are 2 example files included currently. 
 
 | Filename .ino | Function | Advanced Graphics mode| Advanced buffer mode |
 | --- | --- | --- | --- |
@@ -111,14 +110,13 @@ The 5 GPIO pins used. Any GPIO can be used for these.
 
 *USER OPTIONS 2*
 
-4 options User can adjust:
+There are 4 options here user can adjust:
  
 1. 2A screen pixel height 
 2. 2B screen pixel width 
 3. 2C Resolution and gate type. 
 4. 2D Pixel fix mode
 
-There are 4 options here:
 
 ### USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)
 
@@ -127,12 +125,12 @@ Select the correct enum value for your physical module.
 Only tested on 160x160 round. Value of Inversion register(0xEC) in 
 init command sequence may have to be changed.
 
-| Enum Value                  | Resolution | Gate Mode |  Typical Module Description                  | Notes                              |
-|-----------------------------|------------|-----------|-|---------------------------------------------|------------------------------------|
-| `RGB160x160_DualGate`       | 160×160    | Dual      |  Most round GC9D01 displays            | **Default** – no need to set       |
-| `RGB120x160_DualGate`       | 120×160    | Dual      | Some rectangular / bar-type modules         | Dual-gate scanning                 |
-| `RGB80x160_SingleGate`      | 80×160     | Single    |  Smaller rectangular / bar displays          | Single-gate scanning               |
-| `RGB40x160_SingleGate`      | 40×160     | Single    | Very narrow bar-type or specialty modules   | Single-gate scanning               |
+| Enum Value             | Resolution | Gate Mode | Typical Module Description | Notes     |
+|------------------------|------------|-----------|---------------------------|-------------------|
+| `RGB160x160_DualGate`  | 160×160  | Dual   |  Most round GC9D01 displays            | **Default** – no need to set |
+| `RGB120x160_DualGate`  | 120×160  | Dual   | Some rectangular / bar-type modules         | Dual-gate scanning |
+| `RGB80x160_SingleGate` | 80×160   | Single |  Smaller rectangular / bar displays          | Single-gate scanning |
+| `RGB40x160_SingleGate` | 40×160   | Single | Very narrow bar-type or specialty modules   | Single-gate scanning  |
 
 
 #### USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)
@@ -147,12 +145,13 @@ pixel twice for drawPixel() and for drawFastVLine() to disable "fast burst mode"
 Advanced buffer mode: No problems, this setting is ignored.
 
 Default mode: 
-No problem with Bitmaps or drawing text in local buffer mode(default).
+No problem with bitmaps or drawing text in local buffer mode(default).
 Problems occur with certain functions: like drawing text when in pixel mode,
-certain shapes + lines and sprites. This fix slows these functions done.
+certain shapes + lines and sprites. This fix slows these functions down.
 
 Behavior may depend on display module variant and manufacturer so 
-I made it optional to switch off. In the examples files set to default 'both'.
+I made it optional to switch 'fix' off. 
+In the examples files it is set to default 'both'.
 See table for options
 
 | Mode    | Description   |Notes    |
@@ -188,11 +187,15 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Tested
 
-* ESP32 
+* Tested on ESP32 
+
+> Some examples on low-RAM MCUs will fail( insufficient memory ), if numerous fonts and excessive bitmap data are included.  
+> Advanced screen buffer mode requires sufficient dynamic memory for the buffer — see the README in display16_LTSM for details.
+> The Size of Frame buffer needed is: height by width by 2. So for 160x160 screen = 51,200 bytes or 40x160 = 12,800 bytes.
 
 ## Output
 
-Output of DEMOS.ino(Advance buffer mode):
+Output of DEMO_X.ino :
 
 [![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)
 

@@ -115,7 +115,6 @@ void Test901(void)
   myTFT.drawLine(80, 10, 80, 150, myTFT.C_CYAN);  
   myTFT.drawLine(100, 10, 100, 150, myTFT.C_CYAN);
   delay(TEST_DELAY5);
-  delay(TEST_DELAY5);
 	myTFT.fillScreen(myTFT.C_BLACK);
 }
 
@@ -158,10 +157,10 @@ void Test905(void) {
   Serial.println("Test 905 : polygons");
   myTFT.fillScreen(myTFT.C_BLACK);
   //drawPolygon( x,  y, sides,  diameter,  rotation, color);
-  // octagon
+  // octagon draw
   myTFT.drawPolygon(80, 80, 8, 50, 0, false, myTFT.C_GREEN);
   delay(TEST_DELAY5);
-  // octagon
+  // octagon fill
   myTFT.drawPolygon(80, 80, 8, 50, 0, true, myTFT.C_GREEN);
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);

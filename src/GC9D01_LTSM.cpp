@@ -2,7 +2,6 @@
 	@file   GC9D01_LTSM.cpp
 	@author Gavin Lyons
 	@brief  Source file. Contains driver methods for GC9D01_LTSM display 
-	@todo rotate + brightness control not working 
 */
 
 #include "GC9D01_LTSM.hpp"
@@ -110,14 +109,13 @@ void GC9D01_LTSM::TFTsetupGPIO_SPI(uint32_t speed_hz, int8_t rst, int8_t dc, int
 
 /*!
 	@brief init routine for GC9D01 controller
+	@details Calls the appropriate init sequence based on resolution selected
 */
 void GC9D01_LTSM::TFTGC9D01Initialize() 
 {
 	if (_resetPinOn == true) 
 	{
 		TFTResetPIN();
-	}else {
-		TFTresetSWDisplay();
 	}
 	DISPLAY16_DC_SetDigitalOutput;
 	DISPLAY16_DC_SetLow;
@@ -132,7 +130,26 @@ void GC9D01_LTSM::TFTGC9D01Initialize()
 	}else{
 		TFTHWSPIInitialize();
 	}
-		cmdInitSequence();
+
+	if(_currentResolution == Resolution_e::RGB160x160_DualGate ||
+		   _currentResolution == Resolution_e::RGB120x160_DualGate) {
+		#ifdef GC9D01_DUAL_INIT
+			DualGatecmdInitSequence();
+		#else
+			#ifdef dislib16_DEBUG_MODE_ENABLE
+			Serial.println("Error TFTInitScreenSize dual-gate selected but GC9D01_DUAL_INIT not defined");
+			#endif 
+		#endif
+	}else if(_currentResolution == Resolution_e::RGB80x160_SingleGate ||
+					_currentResolution == Resolution_e::RGB40x160_SingleGate) {
+		#ifdef GC9D01_SINGLE_INIT
+			SingleGatecmdInitSequence();
+		#else
+			#ifdef dislib16_DEBUG_MODE_ENABLE	
+			Serial.println("Error TFTInitScreenSize single-gate selected but GC9D01_GATE_INIT not defined");	
+			#endif
+		#endif
+	}
 }
 
 /*!
@@ -211,157 +228,13 @@ uint16_t GC9D01_LTSM::TFTSwSpiGpioDelayGet(void){return _SWSPIGPIODelay;}
 */
 void  GC9D01_LTSM::TFTSwSpiGpioDelaySet(uint16_t CommDelay){_SWSPIGPIODelay = CommDelay;}
 
-// /*!
-// 	@brief Command Initialization sequence for GC9D01 display
-// */
-void GC9D01_LTSM::cmdInitSequence(void)
-{
-	writeCommand(GC9D01_INREGEN1);
-	writeCommand(GC9D01_INREGEN2); 
-
-	// Enabling the internal register: Undocumented in datasheet registers
-	constexpr uint8_t startCmd = 0x80;
-	constexpr uint8_t endCmd   = 0x8F;
-	for (uint8_t cmd = startCmd; cmd <= endCmd; ++cmd)
-	{
-		writeCommand(cmd);
-		writeData(0xFF);
-	}
-
-	// Change frame rate: Undocumented in datasheet registers
-	writeCommand(0x74); 
-	uint8_t seqReg1[] = {0x02, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00};
-	spiWriteDataBuffer(seqReg1, sizeof(seqReg1));
-
-	// Internal voltage regulation: Undocumented in datasheet registers
-	writeCommand(0x98); 
-	writeData(0x3E);
-	writeCommand(0x99);
-	writeData(0x3E);
-
-	// Blanking Porch Control
-	writeCommand(GC9D01_BLANK_PORCH_CTRL);
-	uint8_t segBlankCTR[] = {0x0E, 0x0E, 0x00};
-	spiWriteDataBuffer(segBlankCTR, sizeof(segBlankCTR));
-	
-	 // Timing Gap: Undocumented in datasheet registers
-	writeCommand(0x60);
-	uint8_t seqReg2[] = {0x38, 0x0F, 0x79, 0x67};
-	spiWriteDataBuffer(seqReg2, sizeof(seqReg2));
-	writeCommand(0x61);
-	uint8_t seqReg3[] = {0x38, 0x11, 0x79, 0x67};
-	spiWriteDataBuffer(seqReg3, sizeof(seqReg3));
-	writeCommand(0x64);
-	uint8_t seqReg4[] = {0x38, 0x17, 0x71, 0x5F, 0x79, 0x67};
-	spiWriteDataBuffer(seqReg4, sizeof(seqReg4));
-	writeCommand(0x65);
-	uint8_t seqReg5[] = {0x38, 0x13, 0x71, 0x5B, 0x79, 0x67};
-	spiWriteDataBuffer(seqReg5, sizeof(seqReg5));
-	writeCommand(0x6A);
-	writeData(0x00);
-	writeData(0x00);
-	writeCommand(0x6C);
-	uint8_t segReg6[] = {0x22, 0x02, 0x22, 0x02, 0x22, 0x22, 0x50};
-	spiWriteDataBuffer(segReg6, sizeof(segReg6));
-	writeCommand(0x6E);
-	uint8_t segReg7[] = {0x03, 0x03, 0x01, 0x01, 0x00, 0x00, 0x0F, 0x0F, 0x0D, 0x0D,
-						 0x0B, 0x0B, 0x09, 0x09, 0x00, 0x00, 0x00,
-						 0x00, 0x0A, 0x0A, 0x0C, 0x0C, 0x0E, 0x0E,
-						 0x10, 0x10, 0x00, 0x00, 0x02, 0x02, 0x04, 0x04};
-	spiWriteDataBuffer(segReg7, sizeof(segReg7));
-
-	// The internal voltage adjustment begins
-	// TODO
-
-	writeCommand(GC9D01_DUAL_SINGLE);
-	switch (_currentResolution)
-	{
-		case Resolution_e::RGB160x160_DualGate:
-		case Resolution_e::RGB120x160_DualGate:
-			writeData(0x01);// Dual-Single Gate Select (BFh) 0=>Single gate
-			writeCommand(GC9D01_INVERSION);
-			writeData(0x70); 
-		break;
-		case Resolution_e::RGB80x160_SingleGate:
-		case Resolution_e::RGB40x160_SingleGate:
-			writeData(0x00); // Single gate
-			writeCommand(GC9D01_INVERSION);
-			writeData(0x00); 
-		break;
-	}
-
-	 // Adjustments related to SOU : Undocumented in datasheet registers
-	writeCommand(0xF9);
-	writeData(0x40);
-	//Voltage regulation vreg : Undocumented in datasheet registers
-	writeCommand(0x9b);
-	writeData(0x3b);
-	writeCommand(0x93);
-	uint8_t segReg8[] = {0x33, 0x7F, 0x00};
-	spiWriteDataBuffer(segReg8, sizeof(segReg8));
-
-	// Undocumented in datasheet registers
-	writeCommand(0x7E);
-	writeData(0x30);
-    // VGH/VGL CLK adjustment 70，71h : Undocumented in datasheet registers
-	writeCommand(0x70);
-	uint8_t segReg9[] = {0x0D, 0x02, 0x08, 0x0D, 0x02, 0x08};
-	spiWriteDataBuffer(segReg9, sizeof(segReg9));
-	writeCommand(0x71);
-	uint8_t segReg10[] = {0x0D, 0x02, 0x08};
-	spiWriteDataBuffer(segReg10, sizeof(segReg10));
-	// Internal voltage regulation : Undocumented in datasheet registers
-	writeCommand(0x91);
-	writeData(0x0E);
-	writeData(0x09);
-
-	writeCommand(GC9D01_VREG1A_CTRL);
-	writeData(0x18);
-	writeCommand(GC9D01_VREG1B_CTRL);
-	writeData(0x18);
-	writeCommand(GC9D01_VREG2A_CTRL);
-	writeData(0x3c);
-
-	writeCommand(GC9D01_GAMMA1); // 0xF0
-	uint8_t seqGamma1[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x38};
-	spiWriteDataBuffer(seqGamma1, sizeof(seqGamma1));
-	writeCommand(GC9D01_GAMMA3); // 0xF2
-	uint8_t seqGamma3[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x34};
-	spiWriteDataBuffer(seqGamma3, sizeof(seqGamma3));
-	writeCommand(GC9D01_GAMMA2); // 0xF1
-	uint8_t seqGamma2[] = {0x4B, 0xB8, 0x7B, 0x34, 0x35, 0xEF};
-	spiWriteDataBuffer(seqGamma2, sizeof(seqGamma2));
-	writeCommand(GC9D01_GAMMA4); // 0xF3
-	uint8_t seqGamma4[] = {0x47, 0xB4, 0x72, 0x34, 0x35, 0xDA};
-	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
-
-	writeCommand(GC9D01_COLMOD);
-	writeData(0x55); // 16bit/pixel control
-	writeCommand(GC9D01_FUNCTION_CTRL);
-	writeData(0x00);
-	writeData(0x00);
-	writeCommand(GC9D01_IFACE);
-	writeData(0xc0);
-	writeCommand(GC9D01_SPI2DATA);
-	writeData(0x00);
-	
-	writeCommand(GC9D01_MADCTL);
-	writeData(0x00); 
-	writeCommand(GC9D01_SLPOUT);
-	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
-	writeCommand(GC9D01_DISPON);
-	writeCommand(GC9D01_CONTINUE);
-}
-
-
 /*!
   @brief SPI displays set an address window rectangle for blitting pixels
   @param  x1 Top left corner x coordinate
   @param  y1  Top left corner y coordinate
   @param  w  Width of window
   @param  h  Height of window
-  @note https://en.wikipedia.org/wiki/Bit_blit
- */
+*/
 void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h)
 {	
 	//if drawing a single pixel we need do this to avoid a blank pixel for this device
@@ -605,7 +478,6 @@ void GC9D01_LTSM::drawFastVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t col
 		}
 		spiEndTransaction();
 	}
-
 #endif
 }
 
@@ -615,4 +487,279 @@ void GC9D01_LTSM::drawFastVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t col
 void GC9D01_LTSM::TFTsetPixelFixMode(PixelFixMode_e mode){
 	_currentPixelFixMode = mode;
 }
+
+#ifdef GC9D01_DUAL_INIT
+/*!
+	@brief GC9D01 init command sequence for Dual Gate variant
+		Dual Gate variants include 160x160 and 120x160 resolutions
+*/
+void GC9D01_LTSM::DualGatecmdInitSequence(void)
+{
+
+	writeCommand(GC9D01_INREGEN1);
+	writeCommand(GC9D01_INREGEN2); 
+
+	// Enabling the internal register: Undocumented in datasheet registers
+	constexpr uint8_t startCmd = 0x80;
+	constexpr uint8_t endCmd   = 0x8F;
+	for (uint8_t cmd = startCmd; cmd <= endCmd; ++cmd)
+	{
+		writeCommand(cmd);
+		writeData(0xFF);
+	}
+
+	writeCommand(GC9D01_INVERSION);
+	writeData(0x70); 
+	
+	// Change frame rate: Undocumented in datasheet registers
+	writeCommand(0x74); 
+	uint8_t seqReg1[] = {0x02, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00};
+	spiWriteDataBuffer(seqReg1, sizeof(seqReg1));
+
+	// Internal voltage regulation: Undocumented in datasheet registers
+	writeCommand(0x98); 
+	writeData(0x3E);
+	writeCommand(0x99);
+	writeData(0x3E);
+
+	// Blanking Porch Control
+	writeCommand(GC9D01_BLANK_PORCH_CTRL);
+	uint8_t segBlankCTR[] = {0x0D, 0x0D, 0x00};
+	spiWriteDataBuffer(segBlankCTR, sizeof(segBlankCTR));
+	
+	 // Timing Gap: Undocumented in datasheet registers
+	writeCommand(0x60);
+	uint8_t seqReg2[] = {0x38, 0x0F, 0x79, 0x67};
+	spiWriteDataBuffer(seqReg2, sizeof(seqReg2));
+	writeCommand(0x61);
+	uint8_t seqReg3[] = {0x38, 0x11, 0x79, 0x67};
+	spiWriteDataBuffer(seqReg3, sizeof(seqReg3));
+	writeCommand(0x64);
+	uint8_t seqReg4[] = {0x38, 0x17, 0x71, 0x5F, 0x79, 0x67};
+	spiWriteDataBuffer(seqReg4, sizeof(seqReg4));
+	writeCommand(0x65);
+	uint8_t seqReg5[] = {0x38, 0x13, 0x71, 0x5B, 0x79, 0x67};
+	spiWriteDataBuffer(seqReg5, sizeof(seqReg5));
+	writeCommand(0x6A);
+	writeData(0x00);
+	writeData(0x00);
+	writeCommand(0x6C);
+	uint8_t segReg6[] = {0x22, 0x02, 0x22, 0x02, 0x22, 0x22, 0x50};
+	spiWriteDataBuffer(segReg6, sizeof(segReg6));
+	writeCommand(0x6E);
+	uint8_t segReg7[] = {0x03, 0x03, 0x01, 0x01, 0x00, 0x00, 0x0F, 0x0F, 0x0D, 0x0D,
+						 0x0B, 0x0B, 0x09, 0x09, 0x00, 0x00, 0x00,
+						 0x00, 0x0A, 0x0A, 0x0C, 0x0C, 0x0E, 0x0E,
+						 0x10, 0x10, 0x00, 0x00, 0x02, 0x02, 0x04, 0x04};
+	spiWriteDataBuffer(segReg7, sizeof(segReg7));
+
+	writeCommand(GC9D01_DUAL_SINGLE);
+	writeData(0x01);// Dual-Single Gate Select (BFh) 0=>Single gate
+
+	 // Adjustments related to SOU : Undocumented in datasheet registers
+	writeCommand(0xF9);
+	writeData(0x40);
+	//Voltage regulation vreg : Undocumented in datasheet registers
+	writeCommand(0x9b);
+	writeData(0x3b);
+	writeCommand(0x93);
+	uint8_t segReg8[] = {0x33, 0x7F, 0x00};
+	spiWriteDataBuffer(segReg8, sizeof(segReg8));
+
+	// Undocumented in datasheet registers
+	writeCommand(0x7E);
+	writeData(0x30);
+	// VGH/VGL CLK adjustment 70，71h : Undocumented in datasheet registers
+	writeCommand(0x70);
+	uint8_t segReg9[] = {0x0D, 0x02, 0x08, 0x0D, 0x02, 0x08};
+	spiWriteDataBuffer(segReg9, sizeof(segReg9));
+	writeCommand(0x71);
+	uint8_t segReg10[] = {0x0D, 0x02, 0x08};
+	spiWriteDataBuffer(segReg10, sizeof(segReg10));
+	// Internal voltage regulation : Undocumented in datasheet registers
+	writeCommand(0x91);
+	writeData(0x0E);
+	writeData(0x09);
+
+	writeCommand(GC9D01_VREG1A_CTRL);
+	writeData(0x18);
+	writeCommand(GC9D01_VREG1B_CTRL);
+	writeData(0x18);
+	writeCommand(GC9D01_VREG2A_CTRL);
+	writeData(0x3c);
+
+	writeCommand(GC9D01_GAMMA1); // 0xF0
+	uint8_t seqGamma1[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x38};
+	spiWriteDataBuffer(seqGamma1, sizeof(seqGamma1));
+	writeCommand(GC9D01_GAMMA3); // 0xF2
+	uint8_t seqGamma3[] = {0x13, 0x15, 0x04, 0x05, 0x01, 0x34};
+	spiWriteDataBuffer(seqGamma3, sizeof(seqGamma3));
+	writeCommand(GC9D01_GAMMA2); // 0xF1
+	uint8_t seqGamma2[] = {0x4B, 0xB8, 0x7B, 0x34, 0x35, 0xEF};
+	spiWriteDataBuffer(seqGamma2, sizeof(seqGamma2));
+	writeCommand(GC9D01_GAMMA4); // 0xF3
+	uint8_t seqGamma4[] = {0x47, 0xB4, 0x72, 0x34, 0x35, 0xDA};
+	spiWriteDataBuffer(seqGamma4, sizeof(seqGamma4));
+
+	writeCommand(GC9D01_COLMOD);
+	writeData(0x55); // 16bit/pixel control
+	writeCommand(GC9D01_FUNCTION_CTRL);
+	writeData(0x00);
+	writeData(0x00);
+	writeCommand(GC9D01_IFACE);
+	writeData(0xc0);
+	writeCommand(GC9D01_SPI2DATA);
+	writeData(0x00);
+	
+	writeCommand(GC9D01_MADCTL);
+	writeData(0x00); 
+	writeCommand(GC9D01_SLPOUT);
+	MILLISEC_DELAY(200); // wait at least 120ms after sending Sleep Out cmd(4.2.4.)
+	writeCommand(GC9D01_DISPON);
+	writeCommand(GC9D01_CONTINUE);
+
+}
+#endif
+
+#ifdef GC9D01_SINGLE_INIT
+/*!
+	@brief GC9D01 init command sequence for Single Gate variant
+		Single Gate variants include 80x160 and 40x160 resolutions
+*/
+void GC9D01_LTSM::SingleGatecmdInitSequence(void)
+{
+	writeCommand(0xFE);
+	writeCommand(0xEF);
+
+	// Internal registers 80h–8Fh (all 0xFF) — loop is already optimal
+	for (uint8_t cmd = 0x80; cmd <= 0x8F; ++cmd) {
+		writeCommand(cmd);
+		writeData(0xFF);
+	}
+
+	writeCommand(GC9D01_COLMOD);
+	writeData(0x05);
+	writeCommand(0xEC);
+	writeData(0x11);
+
+	writeCommand(0x7E);
+	writeData(0x7A);
+	// Frame rate (0x74) — 7 bytes
+	writeCommand(0x74);
+	static const uint8_t FrameRatedata[] = {0x02, 0x0E, 0x00, 0x00, 0x28, 0x00, 0x00};
+	spiWriteDataBuffer(const_cast<uint8_t*>(FrameRatedata), sizeof(FrameRatedata));
+
+	writeCommand(0x98);
+	writeData(0x3E);
+	writeCommand(0x99);
+	writeData(0x3E);
+
+	// Porch B5h
+	writeCommand(0xB5);
+	static const uint8_t PorchData[] = {0x0E, 0x0E};
+	spiWriteDataBuffer(const_cast<uint8_t*>(PorchData), sizeof(PorchData));
+
+	// GIP / timing registers — grouped where multiple bytes
+	writeCommand(0x60);
+	static const uint8_t gap1data[]  = {0x38, 0x09, 0x6D, 0x67};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap1data), sizeof(gap1data));
+	writeCommand(0x63);
+	static const uint8_t gap2data[] = {0x38, 0xAD, 0x6D, 0x67, 0x05};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap2data), sizeof(gap2data));
+	writeCommand(0x64);
+	static const uint8_t gap3data[]  = {0x38, 0x0B, 0x70, 0xAB, 0x6D, 0x67};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap3data), sizeof(gap3data));
+	writeCommand(0x66);
+	static const uint8_t gap4data[]  = {0x38, 0x0F, 0x70, 0xAF, 0x6D, 0x67};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap4data), sizeof(gap4data));
+	writeCommand(0x6A);
+	static const uint8_t gap5data[]  = {0x00, 0x00};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap5data), sizeof(gap5data));
+	writeCommand(0x68);
+	static const uint8_t gap6data[] = {0x3B, 0x08, 0x04, 0x00, 0x04, 0x64, 0x67};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap6data), sizeof(gap6data));
+	writeCommand(0x6C);
+	static const uint8_t gap7data[] = {0x22, 0x02, 0x22, 0x02, 0x22, 0x22, 0x50};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gap7data), sizeof(gap7data));
+	// Long 0x6E sequence — 32 bytes
+	writeCommand(0x6E);
+	{
+		static const uint8_t gap8data[] = {
+			0x00, 0x00, 0x00, 0x00, 0x07, 0x01, 0x13, 0x11,
+			0x0B, 0x09, 0x16, 0x15, 0x1D, 0x1E, 0x00, 0x00,
+			0x00, 0x00, 0x1E, 0x1D, 0x15, 0x16, 0x0A, 0x0C,
+			0x12, 0x14, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00
+		};
+		spiWriteDataBuffer(const_cast<uint8_t*>(gap8data), sizeof(gap8data));
+	}
+
+	// Voltage / adjustment block
+	writeCommand(0xA9); writeData(0x1B);
+	writeCommand(0xA8); writeData(0x6B);
+	writeCommand(0xA8); writeData(0x6D);
+	writeCommand(0xA7); writeData(0x40);
+	writeCommand(0xAD); writeData(0x47);
+	writeCommand(0xAF); writeData(0x73);
+	writeCommand(0xAF); writeData(0x73);
+	writeCommand(0xAC); writeData(0x44);
+	writeCommand(0xA3); writeData(0x6C);
+	writeCommand(0xCB); writeData(0x00);
+	writeCommand(0xCD); writeData(0x22);
+	writeCommand(0xC2); writeData(0x10);
+	writeCommand(0xC5); writeData(0x00);
+	writeCommand(0xC6); writeData(0x0E);
+	writeCommand(0xC7); writeData(0x1F);
+	writeCommand(0xC8); writeData(0x0E);
+
+	// Gate select
+	writeCommand(0xBF);
+	writeData(0x00);
+
+	writeCommand(0xF9);
+	writeData(0x20);
+	writeCommand(0x9B);
+	writeData(0x3B);
+	writeCommand(0x93);
+	static const uint8_t data1[]  = {0x33, 0x7F, 0x00};
+	spiWriteDataBuffer(const_cast<uint8_t*>(data1), sizeof(data1));
+	writeCommand(0x70);
+	static const uint8_t data2[] = {0x0E, 0x0F, 0x03, 0x0E, 0x0F, 0x03};
+	spiWriteDataBuffer(const_cast<uint8_t*>(data2), sizeof(data2));
+	writeCommand(0x71);
+	static const uint8_t data3[]  = {0x0E, 0x16, 0x03};
+	spiWriteDataBuffer(const_cast<uint8_t*>(data3), sizeof(data3));
+	writeCommand(0x91);
+	static const uint8_t data4[]  = {0x0E, 0x09};
+	spiWriteDataBuffer(const_cast<uint8_t*>(data4), sizeof(data4));
+
+	writeCommand(0xC3);
+	writeData(0x2C);
+	writeCommand(0xC4);
+	writeData(0x1A);
+
+	// Gamma curves — each 6 bytes
+	writeCommand(0xF0);
+	static const uint8_t gamma1[] = {0x51, 0x13, 0x0C, 0x06, 0x00, 0x2F};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gamma1), sizeof(gamma1));
+	writeCommand(0xF2);
+	static const uint8_t gamma2[] = {0x51, 0x13, 0x0C, 0x06, 0x00, 0x33};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gamma2), sizeof(gamma2));
+	writeCommand(0xF1);
+	static const uint8_t gamma3[] = {0x3C, 0x94, 0x4F, 0x33, 0x34, 0xCF};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gamma3), sizeof(gamma3));
+	writeCommand(0xF3);
+	static const uint8_t gamma4[]  = {0x4D, 0x94, 0x4F, 0x33, 0x34, 0xCF};
+	spiWriteDataBuffer(const_cast<uint8_t*>(gamma4), sizeof(gamma4));
+
+	// MADCTL
+	writeCommand(GC9D01_MADCTL);
+	writeData(0x00);
+	// Sleep out + display on
+	writeCommand(GC9D01_SLPOUT);
+	MILLISEC_DELAY(200); 
+	writeCommand(GC9D01_DISPON);
+	MILLISEC_DELAY(50);
+	writeCommand(GC9D01_CONTINUE); 
+}
+#endif
 //**************** EOF *****************

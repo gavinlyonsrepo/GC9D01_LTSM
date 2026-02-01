@@ -2,7 +2,6 @@
 
 # GC9D01 Readme 
 
-## Note 
 
 ## Table of contents
 
@@ -47,14 +46,15 @@ circuit.
 
 ## Installation
 
-The library will be included in the official Arduino library manger in future.
-For now user will have to install the library into their libraries folder manually. 
+The library is included in the official Arduino library manger and the optimum way to install it is using the library manager which can be opened by the *manage libraries* option in Arduino IDE. 
 
 ## Dependency
 
 This library requires the Arduino library 'display16_LTSM' as a dependency. display16_LTSM library contains
 the graphics, bitmaps, and font methods as well as font data and bitmap test data. Its also 
-where the user sets options(debug, advanced graphics and advanced buffer mode).
+where the user sets options(debug, advanced graphics and frame buffer mode).
+When you install 'GC9D01_LTSM' with Arduino IDE. It should install 'display16_LTSM' as well after 
+a prompt, if it does not you have to install it same way as 'GC9D01_LTSM'.
 The 'display16_LTSM' project and readme is at [URL github link.](https://github.com/gavinlyonsrepo/display16_LTSM)
 'display16_LTSM' is also written by author of this library. 
 
@@ -67,8 +67,6 @@ the dependency 'display16_LTSM' repository, [URL github link](https://github.com
 ## Software
 
 ### Examples
-
-There are 2 example files included currently. 
 
 | Filename .ino | Function | Advanced Graphics mode| Advanced buffer mode |
 | --- | --- | --- | --- |
@@ -122,40 +120,47 @@ There are 4 options here user can adjust:
 
 The GC9D01 controller supports multiple display sizes and gate driving modes.  
 Select the correct enum value for your physical module.
-Only tested on 160x160 round. Value of Inversion register(0xEC) in 
-init command sequence may have to be changed.
+ONLY tested on dual gate 160x160 round display. In addition to passing the parameter
+User must also set a Macro in "user option section" at top 
+of GC9D01_LTSM.hpp , Dual gate mode is on by default.
 
-| Enum Value             | Resolution | Gate Mode | Typical Module Description | Notes     |
-|------------------------|------------|-----------|---------------------------|-------------------|
-| `RGB160x160_DualGate`  | 160×160  | Dual   |  Most round GC9D01 displays            | **Default** – no need to set |
-| `RGB120x160_DualGate`  | 120×160  | Dual   | Some rectangular / bar-type modules         | Dual-gate scanning |
-| `RGB80x160_SingleGate` | 80×160   | Single |  Smaller rectangular / bar displays          | Single-gate scanning |
-| `RGB40x160_SingleGate` | 40×160   | Single | Very narrow bar-type or specialty modules   | Single-gate scanning  |
+```cpp
+//Choose ONE (comment out the other)
+#define DUAL_GATE_INIT_SEQUENCE_ON 1
+//#define SINGLE_GATE_INIT_SEQUENCE_ON 1
+```
+
+| Enum Value             | Resolution | Gate Mode | Typical Module Description | 
+|------------------------|------------|-----------|---------------------------|
+| `RGB160x160_DualGate`  | 160×160  | Dual   | Most round GC9D01 displays **Default**|
+| `RGB120x160_DualGate`  | 120×160  | Dual   | Some rectangular / bar-type modules|
+| `RGB80x160_SingleGate` | 80×160   | Single | Smaller rectangular / bar displays |
+| `RGB40x160_SingleGate` | 40×160   | Single | Very narrow bar-type or specialty modules|
 
 
 *USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)*
 
 Some GC9D01 modules may have a hardware quirk:  
-very narrow address windows (1-pixel wide or 1-pixel high) 
-can cause missing pixels, gaps in vertical lines.
-When Setting up Library, It was discovered that when drawing pixel by pixel in vertical
-direction, some pixels went missing or changed color. The solution was to send the 
-pixel twice for drawPixel() and for drawFastVLine() to disable "fast burst mode".
 
-Advanced buffer mode: No problems, this setting is ignored.
+[![pic3 ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/pixel_error.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/pixel_error.jpg)
+
+When developing library, It was discovered that when drawing pixel by pixel in vertical
+direction, some pixels went missing or changed color. The only solution I could find
+was to send the pixel twice for drawPixel() and for drawFastVLine() to disable "fast burst mode".
 
 Default mode: 
 No problem with bitmaps or drawing text in local buffer mode(default).
 Problems occur with certain functions: like drawing text when in pixel mode,
 certain shapes + lines and sprites. This fix slows these functions down.
 
-Behavior may depend on display module variant and manufacturer so 
-I made it optional to switch 'fix' off. 
-In the examples files it is set to default 'both'.
-See table for options
+Advanced buffer mode: No problems, this setting is ignored.
 
-| Mode    | Description   |Notes    |
-|--------------|---------|---------------|
+Behavior may depend on batch, display module, variant or manufacturer so 
+I made it optional to switch 'fix' off. 
+In the examples files it is set to default 'both'. See table for options
+
+| Mode    | Description   |Notes |
+|----------|----|--------|
 | Off    | Normal drawing (no workaround)  | Fastest, but may show gaps   |
 | DoublePixel | Double-pixel padding in `drawPixel()` | Fixes single pixels    |
 | VFastOff|Pixel-by-pixel only in `drawFastVLine()`| Forces slow vertical lines (no fast burst)|
@@ -187,7 +192,7 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Tested
 
-* Tested on ESP32 
+* Tested on ESP32 , ONLY tested on 160x160 round display.
 
 > Some examples on low-RAM MCUs will fail( insufficient memory ), if numerous fonts and excessive bitmap data are included.  
 > Advanced screen buffer mode requires sufficient dynamic memory for the buffer — see the README in display16_LTSM for details.
@@ -197,7 +202,7 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 Output of DEMO_X.ino :
 
-[![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)
+[![pic2 ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)
 
 ## Notes and Issues
 

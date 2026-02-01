@@ -4,10 +4,17 @@
 	@brief   Arduino Library header file, Contains driver methods for GC9D01_LTSM display
 	@details Depends on arduino library display16_graphics_LTSM  by LionTron systems
 	@todo    investigate brightness mode, not working?
-	@todo    investigate idle mode on , some lines on screen missing?
+	@note    See "Section user option" below 
+			 to select init sequence dual-gate(default) or single-gate
 */
 
 #pragma once
+
+// ========== Section User Options===========
+// Choose ONE (comment out the other)
+#define GC9D01_DUAL_INIT 1
+//#define GC9D01_SINGLE_INIT 1
+// ========== End Section User Options===========
 
 // Section Libraries
 #include "display16_graphics_LTSM.hpp"
@@ -58,7 +65,7 @@ public:
 		Off          = 0,   /**< Normal behavior – may show gaps, missing pixels*/
 		DoublePixel  = 1,   /**< Apply double-pixel padding only in drawPixel */
 		VFastOff     = 2,   /**< Apply pixel by pixel only in drawFastVLine, no fast draw */
-		Both         = 3    /**< Apply both fixes*/
+		Both         = 3    /**< Apply both fixes(default)*/
 	};
 
 	virtual void setAddrWindow(uint16_t, uint16_t, uint16_t, uint16_t) override;
@@ -88,8 +95,13 @@ public:
 private:
 	void TFTHWSPIInitialize(void);
 	void TFTResetPIN(void);
-	void cmdInitSequence(void);
-	
+	#ifdef GC9D01_DUAL_INIT
+		void DualGatecmdInitSequence(void);
+	#endif
+	#ifdef GC9D01_SINGLE_INIT
+		void SingleGatecmdInitSequence(void);
+	#endif
+private:
 	// Display 
 	PowerState_e _currentPowerState = PowerState_e::NormalIdleOff; /**< Enum to hold display mode */
 	Resolution_e  _currentResolution = Resolution_e::RGB160x160_DualGate ; /**< enum to hold display resolution */

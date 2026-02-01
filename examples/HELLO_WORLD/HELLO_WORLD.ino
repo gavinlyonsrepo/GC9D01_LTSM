@@ -17,7 +17,7 @@
 // libraries
 #include "GC9D01_LTSM.hpp"
 // Fonts needed
-#include <fonts_LTSM/FontGroTesk_LTSM.hpp>
+#include <fonts_LTSM/FontArialBold_LTSM.hpp>
 
 ///@cond
 
@@ -71,7 +71,7 @@ void loop(void) {
 void Test100(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
-  myTFT.setFont(FontGroTesk);
+  myTFT.setFont(FontArialBold);
   myTFT.setCursor(25, 40);
   myTFT.print("Hello");
 

@@ -174,14 +174,14 @@ In the examples files it is set to default 'both'. See table for options
 
 *USER OPTION 2E and 2F*
 
-Offsets are required for displays other than 160x160. User enters them here. 
+Offsets may be required for displays other than 160x160. User enters them here. 
 
-| Display type            | Resolution | X offset| Y offset | |
-|------------------------|------------|-----------|
-| `160x160_DualGate`  | 160×160  | 0  | 0 | Default: not needed or used |
-| `120x160_DualGate`  | 120×160  | unknown  | unknown | No display to test | 
-| `80x160_SingleGate` | 80×160   | unknown | unknown | No display to test |
-| `40x160_SingleGate` | 40×160   | -60 | 60 | Needed for 90 and 270 rotations |
+| Display type            |  X offset| Y offset | notes |
+|-------------|------------|---------|--------|
+| `160x160 Dual Gate`  |  0  | 0 | Default: not needed or used |
+| `120x160 Dual Gate`  |  unknown  | unknown | No display to test | 
+| `80x160 Single Gate` |  unknown | unknown | No display to test |
+| `40x160 Single Gate` | -60 | 60 | Needed for 90 and 270 rotations |
 
 ## Hardware
 

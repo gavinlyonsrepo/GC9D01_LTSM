@@ -3,6 +3,7 @@
 	@brief   Example file for GC9D01_LTSM display Library test file, tests : Functions.
 	@author  Gavin Lyons.
 	@note    See USER OPTIONS 1-2 in SETUP function
+           This example is for 160x160 Dual gate.
 	@test 
 	-# Test 500 RGB color OK?
 	-# Test 501 Scroll test
@@ -49,8 +50,8 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  uint16_t OFFSET_X = 0;  // Screen height in pixels
-  uint16_t OFFSET_Y = 0;  // Screen height in pixels
+  uint16_t OFFSET_X = 0;  // Screen X offset in pixels
+  uint16_t OFFSET_Y = 0;  // Screen Y offset in pixels
   // Display type, multiple choice see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
   // Pixel Draw mode type, 4 choices , see readme.  

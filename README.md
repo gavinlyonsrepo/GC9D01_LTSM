@@ -33,7 +33,8 @@ circuit.
 
 1. Power modes, Invert, Scroll, Rotate supported.
 2. Hardware & software SPI
-3. Tested on 160x160 Round Display
+3. Tested on 160x160 Round Display 
+	also tested by third party on 40x160 bar display by third party. 
 4. Arduino eco-system library.
 5. 16 ASCII fonts included, fonts can easily be removed or added.
 6. Advanced graphics class included.
@@ -68,16 +69,19 @@ the dependency 'display16_LTSM' repository, [URL github link](https://github.com
 
 ### Examples
 
+All examples are for dual gate 160x160, except last one. 
+
 | Filename .ino | Function | Advanced Graphics mode| Advanced buffer mode |
 | --- | --- | --- | --- |
 | HELLO WORLD | Hello world  | NO | NO |
 | TEXT | Fonts and text | NO | NO|
 | FUNCTIONS | Function testing Scroll, invert, Power modes etc.| NO | NO |
-| DEMO_ONE| A demo showing a gauge | NO | NO |
+| DEMO ONE| A demo showing a gauge | NO | NO |
 | BITMAP| 1,8 & 16 bit bitmaps tests + bitmap FPS tests| NO | NO |
 | GRAPHICS | Graphics: shapes + lines | YES | NO |
-| DEMO_TWO| A demo showing a gauge | YES | YES |
+| DEMO TWO| A demo showing a gauge | YES | YES |
 | FRAME BUFFER | Advanced Buffer mode | YES | YES |
+| 40x160 SINGLE GATE | various tests for single gate 40x160 | NO |NO |
 
 ### Setup
 
@@ -114,6 +118,8 @@ There are 4 options here user can adjust:
 2. 2B screen pixel width 
 3. 2C Resolution and gate type. 
 4. 2D Pixel fix mode
+5. 2E screen pixel X offset
+6. 2F screen Pixel Y offset 
 
 
 *USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)*
@@ -166,6 +172,16 @@ In the examples files it is set to default 'both'. See table for options
 | VFastOff|Pixel-by-pixel only in `drawFastVLine()`| Forces slow vertical lines (no fast burst)|
 | Both    | Applies both fixes  | Default     |
 
+*USER OPTION 2E and 2F*
+
+Offsets are required for displays other than 160x160. User enters them here. 
+
+| Display type            | Resolution | X offset| Y offset | |
+|------------------------|------------|-----------|
+| `160x160_DualGate`  | 160×160  | 0  | 0 | Default: not needed or used |
+| `120x160_DualGate`  | 120×160  | unknown  | unknown | No display to test | 
+| `80x160_SingleGate` | 80×160   | unknown | unknown | No display to test |
+| `40x160_SingleGate` | 40×160   | -60 | 60 | Needed for 90 and 270 rotations |
 
 ## Hardware
 
@@ -203,6 +219,10 @@ Connections as setup in HELLO_WORLD.ino  test file.
 Output of DEMO_X.ino :
 
 [![pic2 ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output.jpg)
+
+Output of example 40X160_SINGLE_GATE.ino: see github issue 1.
+
+[![pic4 ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/output2.jpg)
 
 ## Notes and Issues
 

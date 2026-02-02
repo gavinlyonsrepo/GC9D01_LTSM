@@ -111,15 +111,14 @@ private:
 	const uint16_t _sleepDelay = 120; /**< Sleep delay in ms, datasheet 4.2.4. */
 	// SPI
 	bool _resetPinOn = true; /**< reset pin? true:hw rst pin, false:sw rt*/
-	// Screen
-	uint8_t _colstart = 0;			/**< Used to offset column in the event of defect at edge of screen */
-	uint8_t _rowstart = 0;			/**< Used to offset row in the event of defect at edge of screen */
-	uint16_t _widthStartTFT = 160;	/**<  never change after first init */
+	// Screen Size
+	uint16_t _widthStartTFT = 160;	/**< never change after first init */
 	uint16_t _heightStartTFT = 160; /**< never change after first init */
-	uint16_t  _GC9D01_X_Start = 0; /**< CONST init Column start offset based on resolution */
-	uint16_t  _GC9D01_Y_Start = 0; /**< CONST  init Row start offset based on resolution */
-	uint16_t _GC9D01_X_OFFSET = 0; /**< Column start offset based on resolution and display type */
-	uint16_t _GC9D01_Y_OFFSET = 0; /**< Row start offset based on resolution and display type */
+	// Screen Offsets
+	uint16_t  _GC9D01_X_Offset_Start = 0; /**< column offset, never change after first init */
+	uint16_t  _GC9D01_Y_Offset_Start = 0; /**< row offset, never change after first init */
+	uint16_t _GC9D01_X_Offset = 0; /**< Column offset based on rotation, resolution and display type */
+	uint16_t _GC9D01_Y_Offset = 0; /**< Row offset based on rotation, resolution and display type */
 	/*!
 	 * @brief MADCTL bit flags for register GC9D01_MADCTL (0x36).
 	 */

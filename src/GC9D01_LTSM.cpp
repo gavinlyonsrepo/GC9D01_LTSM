@@ -167,10 +167,14 @@ void GC9D01_LTSM ::TFTchangeInvertMode(bool invert) {
 /*!
 	@brief: change rotation of display.
 	@param mode display_rotate_e enum
-	0 = Normal
-	1=  90 rotate
-	2 = 180 rotate
-	3 =  270 rotate
+		0 = Normal
+		1=  90 rotate
+		2 = 180 rotate
+		3 =  270 rotate
+	@details 
+			Offsets passed in my user in setup() via TFTInitScreenSize
+			offsets 0,0 for   160x160 resolution
+			offsets -60,60 for 40x160 resolution in 90 and 270 rotations
 */
 void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 	uint8_t madctl =0;
@@ -178,29 +182,29 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 		case Degrees_0 : // 0x00
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
-			_GC9D01_X_OFFSET = 0;
-			_GC9D01_Y_OFFSET = 0;
+			_GC9D01_X_Offset = 0;
+			_GC9D01_Y_Offset = 0;
 			break;
 		case Degrees_90:
 			madctl |= (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::ML);
 			_width  =_heightStartTFT;
 			_height = _widthStartTFT;
-			_GC9D01_X_OFFSET = _GC9D01_X_Start;
-			_GC9D01_Y_OFFSET = _GC9D01_Y_Start;
+			_GC9D01_X_Offset = _GC9D01_X_Offset_Start;
+			_GC9D01_Y_Offset = _GC9D01_Y_Offset_Start;
 			break;
 		case Degrees_180:  
 			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX );
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
-			_GC9D01_X_OFFSET = 0;
-			_GC9D01_Y_OFFSET = 0;
+			_GC9D01_X_Offset = 0;
+			_GC9D01_Y_Offset = 0;
 			break;
 		case Degrees_270:  
 			madctl |= (MADCTL_FLAGS_t::MV |MADCTL_FLAGS_t::MX |MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::ML );
 			_width =_heightStartTFT;
 			_height = _widthStartTFT;
-			_GC9D01_X_OFFSET = _GC9D01_X_Start;
-			_GC9D01_Y_OFFSET = _GC9D01_Y_Start;
+			_GC9D01_X_Offset = _GC9D01_X_Offset_Start;
+			_GC9D01_Y_Offset = _GC9D01_Y_Offset_Start;
 			break;
 	}
 	writeCommand(GC9D01_MADCTL);
@@ -226,8 +230,8 @@ void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT,
 	_heightStartTFT = height_TFT;
 	_currentResolution = resolution;
 	_currentPixelFixMode = pixelFixMode;
-	_GC9D01_X_Start = Xstart;
-	_GC9D01_Y_Start = Ystart;
+	_GC9D01_X_Offset_Start = Xstart;
+	_GC9D01_Y_Offset_Start = Ystart;
 }
 
 /*!
@@ -258,11 +262,13 @@ void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h
 		w = x1;
 		h = y1;
 	}
-	// Apply offsets
-	x1 += _GC9D01_X_OFFSET;
-	y1 += _GC9D01_Y_OFFSET;
-	w += _GC9D01_X_OFFSET;
-	h += _GC9D01_Y_OFFSET;
+	// Apply offsets: not needed for normal 160x160 dual gate resolution
+	if (_currentResolution != Resolution_e::RGB160x160_DualGate) {
+		x1 += _GC9D01_X_Offset;
+		y1 += _GC9D01_Y_Offset;
+		w += _GC9D01_X_Offset;
+		h += _GC9D01_Y_Offset;
+	}
 
 	uint8_t x1Higher = (x1 >> 8) ;
 	uint8_t x1Lower  = (x1 & 0xFF);

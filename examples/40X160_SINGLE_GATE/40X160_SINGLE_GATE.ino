@@ -1,18 +1,13 @@
 /*!
-	@file   HELLO_WORLD.ino
+	@file   40X160_SINGLE_GATE.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
           This example will test 40X160 single gate 
 	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
-  @details We demonstrate the two different text draw modes:
-           "Hello" is printed in text local buffer mode, default. Much faster(5X) but creates 
-           a local character buffer for each
-           character which could cause problems with very large fonts used by MCU with low RAM.
-           "World" is printed in text draw pixel by pixel mode. The "FixType" variable in setup
-           will effect this draw mode. User can turn this off and it will be 2X faster but 
-           missing pixels may result depending on Display manufacture/varient. 
+  @details We rotate the display 270 degrees and print 'Hello 270'
+           text is printed in text local buffer mode: default. 
 	@test
-		-# Test 101 Print out Hello world  
+		-# Test 101 Print out 'Hello 270'  
 */
 
 // libraries
@@ -78,14 +73,6 @@ void Test100(void) {
   myTFT.setFont(FontArialBold);
   myTFT.setCursor(10, 10);
   myTFT.print("Hello 270");
-
-  // Switch to pixel by pixel mode test 
-  //================
-  Serial.println(myTFT.getTextCharPixelOrBuffer());
-  myTFT.setTextCharPixelOrBuffer(true);
-   //===================
-  myTFT.setCursor(25, 80);
-  myTFT.print("World");
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);

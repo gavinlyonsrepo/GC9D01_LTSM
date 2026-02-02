@@ -174,14 +174,13 @@ In the examples files it is set to default 'both'. See table for options
 
 *USER OPTION 2E and 2F*
 
-Offsets may be required for displays other than 160x160. User enters them here. 
+| Display type              | X offset | Y offset | Notes |
+|---------------------------|----------|----------|-------|
+| `160x160 Dual Gate`       | 0        | 0        | Full GRAM exposed. No offsets required in any rotation. |
+| `120x160 Dual Gate`       | TBD      | TBD      | Expected to require centering offsets (~20 px) depending on rotation. Not hardware tested. |
+| `80x160 Single Gate`      | TBD      | TBD      | Expected to require centering offsets (~40 px). Single-gate panels may vary by vendor. Not hardware tested. |
+| `40x160 Single Gate`      | -60      | 60       | **Tested**. Offsets required for 90° and 270° rotations due to centered 40-pixel active area. |
 
-| Display type            |  X offset| Y offset | notes |
-|-------------|------------|---------|--------|
-| `160x160 Dual Gate`  |  0  | 0 | Default: not needed or used |
-| `120x160 Dual Gate`  |  unknown  | unknown | No display to test | 
-| `80x160 Single Gate` |  unknown | unknown | No display to test |
-| `40x160 Single Gate` | -60 | 60 | Needed for 90 and 270 rotations |
 
 ## Hardware
 

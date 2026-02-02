@@ -81,7 +81,7 @@ All examples are for dual gate 160x160, except last one.
 | GRAPHICS | Graphics: shapes + lines | YES | NO |
 | DEMO TWO| A demo showing a gauge | YES | YES |
 | FRAME BUFFER | Advanced Buffer mode | YES | YES |
-| 40x160 SINGLE GATE | various tests for single gate 40x160 | NO |NO |
+| 40x160 SINGLE GATE | basic test for single gate 40x160 | NO |NO |
 
 ### Setup
 
@@ -89,7 +89,7 @@ In the example ino files. There are sections in "setup()" function
 where user can make adjustments.
 
 1. USER OPTION 1 GPIO, SPI Speed + type
-2. USER OPTION 2 Screen Size, Resolution, Gate type and Missing Pixel Fix. 
+2. USER OPTION 2 Screen Size, Offsets, resolution, Gate type and Missing Pixel Fix. 
 
 
 *GPIO SPI SPEED*
@@ -112,7 +112,7 @@ The 5 GPIO pins used. Any GPIO can be used for these.
 
 *USER OPTIONS 2*
 
-There are 4 options here user can adjust:
+There are options here user can adjust:
  
 1. 2A screen pixel height 
 2. 2B screen pixel width 
@@ -126,8 +126,7 @@ There are 4 options here user can adjust:
 
 The GC9D01 controller supports multiple display sizes and gate driving modes.  
 Select the correct enum value for your physical module.
-ONLY tested on dual gate 160x160 round display. In addition to passing the parameter
-User must also set a Macro in "user option section" at top 
+In addition to passing the parameter. User must also set a Macro in "user option section" at top 
 of GC9D01_LTSM.hpp , Dual gate mode is on by default.
 
 ```cpp
@@ -174,11 +173,14 @@ In the examples files it is set to default 'both'. See table for options
 
 *USER OPTION 2E and 2F*
 
+On some displays an offset is required, I made this a user input
+rather than hard-coded due to diversity of variant modules available.
+
 | Display type              | X offset | Y offset | Notes |
 |---------------------------|----------|----------|-------|
-| `160x160 Dual Gate`       | 0        | 0        | Full GRAM exposed. No offsets required in any rotation. |
+| `160x160 Dual Gate`       | 0        | 0        | Full GRAM exposed. No offsets required in any rotation. *Default* |
 | `120x160 Dual Gate`       | TBD      | TBD      | Expected to require centering offsets (~20 px) depending on rotation. Not hardware tested. |
-| `80x160 Single Gate`      | TBD      | TBD      | Expected to require centering offsets (~40 px). Single-gate panels may vary by vendor. Not hardware tested. |
+| `80x160 Single Gate`      | TBD      | TBD      | Expected to require centering offsets (~40 px) depending on rotation. Not hardware tested. |
 | `40x160 Single Gate`      | -60      | 60       | **Tested**. Offsets required for 90° and 270° rotations due to centered 40-pixel active area. |
 
 
@@ -207,7 +209,7 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Tested
 
-* Tested on ESP32 , ONLY tested on 160x160 round display.
+* Tested on ESP32 , ONLY tested on 160x160 round display and 40x160 bar display(third party)
 
 > Some examples on low-RAM MCUs will fail( insufficient memory ), if numerous fonts and excessive bitmap data are included.  
 > Advanced screen buffer mode requires sufficient dynamic memory for the buffer — see the README in display16_LTSM for details.

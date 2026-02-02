@@ -75,7 +75,8 @@ public:
 	void TFTsetupGPIO_SPI(uint16_t CommDelay, int8_t rst, int8_t dc, int8_t cs, int8_t sclk, int8_t din);
 	void TFTsetupGPIO_SPI(uint32_t baudrate, int8_t rst, int8_t dc, int8_t cs);
 	void TFTInitScreenSize(uint16_t w = 160, uint16_t h = 160, 
-		Resolution_e r = Resolution_e::RGB160x160_DualGate, PixelFixMode_e p = PixelFixMode_e::Both);
+		Resolution_e r = Resolution_e::RGB160x160_DualGate, PixelFixMode_e p = PixelFixMode_e::Both, 
+		uint16_t Xstart= 0, uint16_t Ystart=0);
 	void TFTGC9D01Initialize(void);
 	void TFTPowerDown(void);
 	uint16_t TFTSwSpiGpioDelayGet(void);
@@ -115,7 +116,10 @@ private:
 	uint8_t _rowstart = 0;			/**< Used to offset row in the event of defect at edge of screen */
 	uint16_t _widthStartTFT = 160;	/**<  never change after first init */
 	uint16_t _heightStartTFT = 160; /**< never change after first init */
-
+	uint16_t  _GC9D01_X_Start = 0; /**< CONST init Column start offset based on resolution */
+	uint16_t  _GC9D01_Y_Start = 0; /**< CONST  init Row start offset based on resolution */
+	uint16_t _GC9D01_X_OFFSET = 0; /**< Column start offset based on resolution and display type */
+	uint16_t _GC9D01_Y_OFFSET = 0; /**< Row start offset based on resolution and display type */
 	/*!
 	 * @brief MADCTL bit flags for register GC9D01_MADCTL (0x36).
 	 */

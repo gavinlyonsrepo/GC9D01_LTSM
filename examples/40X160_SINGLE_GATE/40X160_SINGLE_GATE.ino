@@ -2,6 +2,7 @@
 	@file   HELLO_WORLD.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
+          This example will test 40X160 single gate 
 	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
   @details We demonstrate the two different text draw modes:
            "Hello" is printed in text local buffer mode, default. Much faster(5X) but creates 
@@ -50,17 +51,18 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  uint16_t TFT_WIDTH = 160;   // Screen width in pixels
+  uint16_t TFT_WIDTH = 40;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  uint16_t OFFSET_X = 0;  // Screen height in pixels
-  uint16_t OFFSET_Y = 0;  // Screen height in pixels
+  uint16_t S_X_OFFSET = -60; // Display X offset in pixels 
+  uint16_t S_Y_OFFSET = 60;  // Display Y offset in pixels
   // Display type, 4 choice's, see readme.
-  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
+  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB40x160_SingleGate;
   // Pixel Draw mode type, 4 choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X, OFFSET_Y);
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, S_X_OFFSET, S_Y_OFFSET);
   // ===
   myTFT.TFTGC9D01Initialize();
+  myTFT.TFTsetRotation(myTFT.Degrees_270);
   Serial.println("Start");
 }
 
@@ -74,8 +76,8 @@ void Test100(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
   myTFT.setFont(FontArialBold);
-  myTFT.setCursor(25, 40);
-  myTFT.print("Hello");
+  myTFT.setCursor(10, 10);
+  myTFT.print("Hello 270");
 
   // Switch to pixel by pixel mode test 
   //================

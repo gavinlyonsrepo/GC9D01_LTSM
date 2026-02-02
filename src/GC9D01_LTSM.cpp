@@ -178,21 +178,29 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 		case Degrees_0 : // 0x00
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
+			_GC9D01_X_OFFSET = 0;
+			_GC9D01_Y_OFFSET = 0;
 			break;
 		case Degrees_90:
 			madctl |= (MADCTL_FLAGS_t::MV | MADCTL_FLAGS_t::ML);
 			_width  =_heightStartTFT;
 			_height = _widthStartTFT;
+			_GC9D01_X_OFFSET = _GC9D01_X_Start;
+			_GC9D01_Y_OFFSET = _GC9D01_Y_Start;
 			break;
 		case Degrees_180:  
 			madctl |= (MADCTL_FLAGS_t::MY | MADCTL_FLAGS_t::MX );
 			_width =_widthStartTFT;
 			_height = _heightStartTFT;
+			_GC9D01_X_OFFSET = 0;
+			_GC9D01_Y_OFFSET = 0;
 			break;
 		case Degrees_270:  
 			madctl |= (MADCTL_FLAGS_t::MV |MADCTL_FLAGS_t::MX |MADCTL_FLAGS_t::MY |MADCTL_FLAGS_t::ML );
 			_width =_heightStartTFT;
 			_height = _widthStartTFT;
+			_GC9D01_X_OFFSET = _GC9D01_X_Start;
+			_GC9D01_Y_OFFSET = _GC9D01_Y_Start;
 			break;
 	}
 	writeCommand(GC9D01_MADCTL);
@@ -203,10 +211,14 @@ void GC9D01_LTSM::TFTsetRotation(display_rotate_e mode) {
 	@brief initialise the variables that define the size of the screen
 	@param width_TFT width in pixels
 	@param height_TFT height in pixels
-	@param resolution Current Resolution see enum gc9d01_resolution_e for options 
+	@param resolution Current Resolution see enum gc9d01_resolution_e for options
+	@param pixelFixMode Current PixelFixMode see enum PixelFixMode_e for options
+	@param Xstart Column start offset based on resolution and display type
+	@param Ystart Row start offset based on resolution and display type
 	@note  The offsets can be adjusted for any issues with manufacture tolerance/defects
 */
-void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT, Resolution_e resolution, PixelFixMode_e pixelFixMode)
+void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT, Resolution_e resolution, 
+	PixelFixMode_e pixelFixMode, uint16_t Xstart, uint16_t Ystart)
 {
 	_width = width_TFT;
 	_height = height_TFT;
@@ -214,6 +226,8 @@ void GC9D01_LTSM  :: TFTInitScreenSize( uint16_t width_TFT, uint16_t height_TFT,
 	_heightStartTFT = height_TFT;
 	_currentResolution = resolution;
 	_currentPixelFixMode = pixelFixMode;
+	_GC9D01_X_Start = Xstart;
+	_GC9D01_Y_Start = Ystart;
 }
 
 /*!
@@ -244,6 +258,12 @@ void GC9D01_LTSM::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h
 		w = x1;
 		h = y1;
 	}
+	// Apply offsets
+	x1 += _GC9D01_X_OFFSET;
+	y1 += _GC9D01_Y_OFFSET;
+	w += _GC9D01_X_OFFSET;
+	h += _GC9D01_Y_OFFSET;
+
 	uint8_t x1Higher = (x1 >> 8) ;
 	uint8_t x1Lower  = (x1 & 0xFF);
 	uint8_t x2Higher = (w >> 8);

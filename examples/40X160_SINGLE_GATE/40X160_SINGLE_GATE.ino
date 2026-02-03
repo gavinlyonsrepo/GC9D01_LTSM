@@ -2,12 +2,14 @@
 	@file   40X160_SINGLE_GATE.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
-          This example will test 40X160 single gate 
+            This example will test 40x160 single gate 
 	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
-  @details We rotate the display 270 degrees and print 'Hello 270'
-           text is printed in text local buffer mode: default. 
+			Make sure to set relevant macro at top of 'GC9D01_LTSM.hpp', in 
+			'Section User Options'.
+  @details  We rotate the display 270 degrees and print 'Hello 270'
+            text is printed in text local buffer mode: default. 
 	@test
-		-# Test 101 Print out 'Hello 270'  
+		-# Test 106 Print out 'Hello 270'  
 */
 
 // libraries

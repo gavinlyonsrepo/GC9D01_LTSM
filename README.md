@@ -16,6 +16,7 @@
 * [Tested](#tested)
 * [Output](#output)
 * [Notes and Issues](#notes-and-issues)
+	* [Rotation Artifacting](#rotation artifacting)
 
 
 ## Overview
@@ -227,3 +228,11 @@ Output of example 40X160_SINGLE_GATE.ino: see github issue 1.
 
 ## Notes and Issues
 
+### Rotation Artifacting
+
+See issue #3 in github repo for details. User may encounter some artifacting or missing pixels when using certain functions in pixel mode with vertical drawing,
+in rotation's other than 0 degree rotation(the default).
+
+Until a solution is found:
+Recommended using display in 0 degree rotation or using advanced buffer mode to avoid this issue. Problem may be related to fix described in USER OPTION 2D above.
+Avoid using drawing text in the non-default pixel by pixel mode(setTextCharPixelOrBuffer(true)) with this display. Advanced buffer mode is explained in the dependency library display16_LTSM documentation.

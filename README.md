@@ -16,7 +16,7 @@
 * [Tested](#tested)
 * [Output](#output)
 * [Notes and Issues](#notes-and-issues)
-	* [Rotation Artifacting](#rotation artifacting)
+	* [Rotation Artifacting](#rotation-artifacting)
 
 
 ## Overview

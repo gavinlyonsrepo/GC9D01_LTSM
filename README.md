@@ -189,24 +189,31 @@ rather than hard-coded due to diversity of variant modules available.
 
 [![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)
 
+Schmatic of components on back of tested 160x160 module above.
+ 
+[![sch ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.png)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.jpg)
+
 Connections as setup in HELLO_WORLD.ino  test file.
 
 | TFT PinNum | Pindesc | Hardware SPI | Software SPI |
 | --- | --- | --- | --- |
 | 1 | GND | GND | GND |
-| 2 | VCC | VCC 3.3 | VCC 3.3|
+| 2 | VCC |  See notes below | <- |
 | 3 | SCLK | MCU SPI CLK | GPIO12 |
 | 4 | SDA | MCU MOSI | GPIO13 |
 | 5 | RESET | GPIO4 | GPIO4 |
 | 6 | DC | GPIO5 | GPIO5 |
 | 7 | CS | GPIO15 | GPIO15 |
-| 8 | LED | VCC 3.3 | VCC 3.3|
+| 8 | LED | See notes below | <- |
 
+
+*Notes* 
 
 1. This is a 3.3V logic device do NOT connect the I/O logic lines to 5V logic device.
-2. SW SPI pick any GPIO you like , HW SPI SCLK and SDA will be tied to MCU SPI interface.
-3. Backlight on/off control is left to user.
-4. NOTE: Connect LED backlight pin 1 thru a resistor to VCC.
+2. *If* your module has a 3.3V regulator on board you can connect(VCC) to 5V.
+3. SW SPI pick any GPIO you like , HW SPI SCLK and SDA will be tied to MCU SPI interface.
+4. Backlight on/off control is left to user.
+5. Connect LED backlight to VCC or GPIO through a transistor switch(Your module may already have one implemented)
 
 ## Tested
 

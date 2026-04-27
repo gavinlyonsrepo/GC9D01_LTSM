@@ -13,7 +13,8 @@
 // ========== Section User Options===========
 // Choose ONE (comment out the other)
 #define GC9D01_DUAL_INIT 1
-//#define GC9D01_SINGLE_INIT 1
+//#define GC9D01_SINGLE_INIT_40x160 1
+//#define GC9D01_SINGLE_INIT_60x160 1
 // ========== End Section User Options===========
 
 // Section Libraries
@@ -53,6 +54,7 @@ public:
 		RGB160x160_DualGate,	 /**< 160RGB × 160, S1–S240, Dual gate (default) */
 		RGB120x160_DualGate,	 /**< 120RGB × 160, S31–S210, Dual gate */
 		RGB80x160_SingleGate,	 /**< 80RGB × 160, S1–S240, Single gate */
+		RGB60x160_SingleGate,	 /**< 40×160, Single gate */
 		RGB40x160_SingleGate	 /**< 40RGB × 160, S61–S180, Single gate */
 	};
 	
@@ -76,7 +78,7 @@ public:
 	void TFTsetupGPIO_SPI(uint32_t baudrate, int8_t rst, int8_t dc, int8_t cs);
 	void TFTInitScreenSize(uint16_t w = 160, uint16_t h = 160, 
 		Resolution_e r = Resolution_e::RGB160x160_DualGate, PixelFixMode_e p = PixelFixMode_e::Both, 
-		uint16_t Xstart= 0, uint16_t Ystart=0);
+		uint16_t XLstart= 0, uint16_t YLstart=0, uint16_t defaultStartX= 0, uint16_t defaultStartY=0);
 	void TFTGC9D01Initialize(void);
 	void TFTPowerDown(void);
 	uint16_t TFTSwSpiGpioDelayGet(void);
@@ -99,8 +101,11 @@ private:
 	#ifdef GC9D01_DUAL_INIT
 		void DualGatecmdInitSequence(void);
 	#endif
-	#ifdef GC9D01_SINGLE_INIT
-		void SingleGatecmdInitSequence(void);
+	#ifdef GC9D01_SINGLE_INIT_40x160
+		void SingleGatecmdInitSequence40x160(void);
+	#endif
+	#ifdef GC9D01_SINGLE_INIT_60x160
+		void SingleGatecmdInitSequence60x160(void);
 	#endif
 private:
 	// Display 
@@ -115,10 +120,13 @@ private:
 	uint16_t _widthStartTFT = 160;	/**< never change after first init */
 	uint16_t _heightStartTFT = 160; /**< never change after first init */
 	// Screen Offsets
-	uint16_t  _GC9D01_X_Offset_Start = 0; /**< column offset, never change after first init */
-	uint16_t  _GC9D01_Y_Offset_Start = 0; /**< row offset, never change after first init */
+	uint16_t _GC9D01_X_Offset_Start = 0; /**< column offset, never change after first init */
+	uint16_t _GC9D01_Y_Offset_Start = 0; /**< row offset, never change after first init */
 	uint16_t _GC9D01_X_Offset = 0; /**< Column offset based on rotation, resolution and display type */
 	uint16_t _GC9D01_Y_Offset = 0; /**< Row offset based on rotation, resolution and display type */
+	uint16_t _GC9D01_X_Default_Offset = 0; /**< Default offset X */
+	uint16_t _GC9D01_Y_Default_Offset = 0; /**< Default offset Y */
+	// SW SPI
 	/*!
 	 * @brief MADCTL bit flags for register GC9D01_MADCTL (0x36).
 	 */

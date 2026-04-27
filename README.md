@@ -189,7 +189,7 @@ rather than hard-coded due to diversity of variant modules available.
 
 [![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)
 
-Schmatic of components on back of tested 160x160 module above.
+Schematic of components on back of tested 160x160 module above.
  
 [![sch ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.png)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.jpg)
 

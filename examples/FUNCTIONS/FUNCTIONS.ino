@@ -123,30 +123,30 @@ void Test501(void) {
 
 void Test502() {
   Serial.println("Test 502: Rotate");
-  char teststr0[] = "R 0";    //normal
-  char teststr1[] = "R 90";   // 90
-  char teststr2[] = "R 180";  // 180
-  char teststr3[] = "R 270";  // 270
+  char teststr0[] = "Rotate 0";    //normal
+  char teststr1[] = "Rotate 90";   // 90
+  char teststr2[] = "Rotate 180";  // 180
+  char teststr3[] = "Rotate 270";  // 270
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_0);
   myTFT.writeCharString(15, 80, teststr0);
-  delay(TEST_DELAY2);
+  delay(TEST_DELAY5);
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_90);
   myTFT.writeCharString(25, 80, teststr1);
-  delay(TEST_DELAY2);
+  delay(TEST_DELAY5);
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_180);
   myTFT.writeCharString(25, 80, teststr2);
-  delay(TEST_DELAY2);
+  delay(TEST_DELAY5);
 
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.TFTsetRotation(myTFT.Degrees_270);
   myTFT.writeCharString(25, 80, teststr3);
-  delay(TEST_DELAY2);
+  delay(TEST_DELAY5);
 
   myTFT.TFTsetRotation(myTFT.Degrees_0);
   myTFT.fillScreen(myTFT.C_BLACK);

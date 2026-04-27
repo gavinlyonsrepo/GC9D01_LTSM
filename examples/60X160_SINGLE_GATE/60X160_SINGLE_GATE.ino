@@ -1,15 +1,13 @@
 /*!
-	@file   40X160_SINGLE_GATE.ino
+	@file   60X160_SINGLE_GATE.ino
 	@author Gavin Lyons
-	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
-            This example will test 40x160 single gate 
+	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hi"
+            This example will test 60x160 single gate 
 	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
 			Make sure to set relevant macro at top of 'GC9D01_LTSM.hpp', in 
-			'Section User Options'. GC9D01_SINGLE_INIT_40x160
-  @details  We rotate the display 270 degrees and print 'Hello 270'
-            text is printed in text local buffer mode: default. 
+			'Section User Options'. GC9D01_SINGLE_INIT_60x160
 	@test
-		-# Test 106 Print out 'Hello 270'  
+		-# Test 109 Print out 'Hi' 
 */
 
 // libraries
@@ -48,18 +46,20 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  uint16_t TFT_WIDTH = 40;   // Screen width in pixels
+  uint16_t TFT_WIDTH = 60;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  uint16_t S_X_OFFSET = -60; // Display X offset in pixels 
-  uint16_t S_Y_OFFSET = 60;  // Display Y offset in pixels
+  uint16_t S_X_OFFSET = 0;   // Display landscape X offset in pixels 
+  uint16_t S_Y_OFFSET = 0;  // Display landscape Y offset in pixels
+  uint16_t D_X_OFFSET = 10; // Default display + X offset in pixels
+  uint16_t D_Y_OFFSET = 0;  // Default display + Y offset in pixels
   // Display type, 4 choice's, see readme.
-  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB40x160_SingleGate;
+  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB60x160_SingleGate;
   // Pixel Draw mode type, 4 choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, S_X_OFFSET, S_Y_OFFSET);
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, S_X_OFFSET, S_Y_OFFSET, D_X_OFFSET, D_Y_OFFSET);
   // ===
   myTFT.TFTGC9D01Initialize();
-  myTFT.TFTsetRotation(myTFT.Degrees_270);
+  myTFT.TFTsetRotation(myTFT.Degrees_0);
   Serial.println("Start");
 }
 
@@ -71,14 +71,15 @@ void loop(void) {
 
 void Test100(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
-  myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
+  myTFT.setTextColor(myTFT.C_RED, myTFT.C_YELLOW);
   myTFT.setFont(FontArialBold);
-  myTFT.setCursor(10, 10);
-  myTFT.print("Hello 270");
+  myTFT.setCursor(0, 0);
+  myTFT.print("Hi!");
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
-  myTFT.fillScreen(myTFT.C_BLACK);
+  myTFT.fillScreen(myTFT.C_BLUE);
   delay(TEST_DELAY1);
+  myTFT.fillScreen(myTFT.C_BLACK);
 }
 
 void EndTests(void) {

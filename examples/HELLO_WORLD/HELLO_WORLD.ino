@@ -2,7 +2,7 @@
 	@file   HELLO_WORLD.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
-	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
+	@note   See USER OPTIONS in SETUP function, Default mode: no advanced buffer.
           This example is for 160x160 Dual gate.
   @details We demonstrate the two different text draw modes:
            "Hello" is printed in text local buffer mode, default. Much faster(5X) but creates 
@@ -36,7 +36,7 @@ bool bhardwareSPI = true;  // true for hardware spi, false for software
 void setup(void) {
   Serial.begin(38400);
   delay(1000);
-  // === USER OPTION 1 SPI_SPEED + TYPE ===
+  // === USER OPTION 1 SPI_SPEED + GPIO + TYPE ===
   int8_t DC_TFT = 5;
   int8_t RST_TFT = 4;
   int8_t CS_TFT = 15;
@@ -45,21 +45,24 @@ void setup(void) {
     myTFT.TFTsetupGPIO_SPI(TFT_SCLK_FREQ, RST_TFT, DC_TFT, CS_TFT);
   } else {                        // sw spi
     uint16_t SWSPICommDelay = 0;  // optional SW SPI GPIO delay in uS
-    int8_t SDIN_TFT = 13;
-    int8_t SCLK_TFT = 12;
+    int8_t SDIN_TFT = 26;
+    int8_t SCLK_TFT = 27;
     myTFT.TFTsetupGPIO_SPI(SWSPICommDelay, RST_TFT, DC_TFT, CS_TFT, SCLK_TFT, SDIN_TFT);
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  uint16_t OFFSET_X = 0;  // Screen X offset in pixels
-  uint16_t OFFSET_Y = 0;  // Screen Y offset in pixels
-  // Display type, 4 choice's, see readme.
+  uint16_t OFFSET_X_L = 0;  // Landscape Screen X offset in pixels
+  uint16_t OFFSET_Y_L = 0;  // Landscape Screen Y offset in pixels
+  uint16_t OFFSET_X_P = 0;  // Portrait Screen X offset in pixels
+  uint16_t OFFSET_Y_P = 0;  // Portrait Screen Y offset in pixels
+  // Display type, 6 choice's, see readme.
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  // Pixel Draw mode type, 4 choices , see readme.  
+  // Pixel Draw mode type, 46choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X, OFFSET_Y);
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, 
+  OFFSET_X_L, OFFSET_Y_L, OFFSET_X_P, OFFSET_Y_P);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");
@@ -80,8 +83,9 @@ void Test100(void) {
 
   // Switch to pixel by pixel mode test 
   //================
-  Serial.println(myTFT.getTextCharPixelOrBuffer());
+  Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "0"
   myTFT.setTextCharPixelOrBuffer(true);
+   Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "1"
    //===================
   myTFT.setCursor(25, 80);
   myTFT.print("World");

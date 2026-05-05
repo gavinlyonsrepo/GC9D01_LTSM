@@ -1,7 +1,6 @@
+# GC9D01 Readme
+
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/whitelight976)
-
-# GC9D01 Readme 
-
 
 ## Table of contents
 
@@ -10,14 +9,15 @@
 * [Dependency](#dependency)
 * [Documentation](#documentation)
 * [Software](#software)
-	* [Examples](#examples)
-	* [Setup](#setup)
+  * [Examples](#examples)
+  * [Setup](#setup)
+    * [User option 1](#user-option-1)
+    * [User option 2](#user-option-2)
 * [Hardware](#hardware)
 * [Tested](#tested)
 * [Output](#output)
 * [Notes and Issues](#notes-and-issues)
-	* [Rotation Artifacting](#rotation-artifacting)
-
+  * [Rotation Artifacting](#rotation-artifacting)
 
 ## Overview
 
@@ -34,8 +34,8 @@ circuit.
 
 1. Power modes, Invert, Scroll, Rotate supported.
 2. Hardware & software SPI
-3. Tested on 160x160 Round Display 
-	also tested by third party on 40x160 bar display by third party. 
+3. Tested on 160x160 Round Display
+also tested by third party on 40x160 bar display by third party.
 4. Arduino eco-system library.
 5. 16 ASCII fonts included, fonts can easily be removed or added.
 6. Advanced graphics class included.
@@ -48,41 +48,43 @@ circuit.
 
 ## Installation
 
-The library is included in the official Arduino library manger and the optimum way to install it is using the library manager which can be opened by the *manage libraries* option in Arduino IDE. 
+The library is included in the official Arduino library manger and the optimum way to install it is using the library manager which can be opened by the *manage libraries* option in Arduino IDE.
 
 ## Dependency
 
 This library requires the Arduino library 'display16_LTSM' as a dependency. display16_LTSM library contains
-the graphics, bitmaps, and font methods as well as font data and bitmap test data. Its also 
+the graphics, bitmaps, and font methods as well as font data and bitmap test data. Its also
 where the user sets options(debug, advanced graphics and frame buffer mode).
-When you install 'GC9D01_LTSM' with Arduino IDE. It should install 'display16_LTSM' as well after 
+When you install 'GC9D01_LTSM' with Arduino IDE. It should install 'display16_LTSM' as well after
 a prompt, if it does not you have to install it same way as 'GC9D01_LTSM'.
 The 'display16_LTSM' project and readme is at [URL github link.](https://github.com/gavinlyonsrepo/display16_LTSM)
-'display16_LTSM' is also written by author of this library. 
+'display16_LTSM' is also written by author of this library.
 
 ## Documentation
 
 Code is commented for the 'doxygen' API generation tool.
-Documents on fonts, bitmaps and graphics can be found at 
+Documents on fonts, bitmaps and graphics can be found at
 the dependency 'display16_LTSM' repository, [URL github link](https://github.com/gavinlyonsrepo/display16_LTSM)
 
 ## Software
 
 ### Examples
 
-All examples are for dual gate 160x160, except last one. 
+All examples are for dual gate 160x160, except last three.
 
-| Filename .ino | Function | Advanced Graphics mode| Advanced buffer mode |
+| Filename .ino | Function | Advanced Graphics mode | Advanced buffer mode |
 | --- | --- | --- | --- |
-| HELLO WORLD | Hello world  | NO | NO |
-| TEXT | Fonts and text | NO | NO|
-| FUNCTIONS | Function testing Scroll, invert, Power modes etc.| NO | NO |
-| DEMO ONE| A demo showing a gauge | NO | NO |
-| BITMAP| 1,8 & 16 bit bitmaps tests + bitmap FPS tests| NO | NO |
+| HELLO WORLD | Hello world | NO | NO |
+| TEXT | Fonts and text | NO | NO |
+| FUNCTIONS | Function testing Scroll, invert, Power modes etc. | NO | NO |
+| DEMO ONE | A demo showing a gauge | NO | NO |
+| BITMAP | 1,8 & 16 bit bitmaps tests + bitmap FPS tests | NO | NO |
 | GRAPHICS | Graphics: shapes + lines | YES | NO |
-| DEMO TWO| A demo showing a gauge | YES | YES |
+| DEMO TWO | A demo showing a gauge | YES | YES |
 | FRAME BUFFER | Advanced Buffer mode | YES | YES |
-| 40x160 SINGLE GATE | basic test for single gate 40x160 | NO |NO |
+| 40x160 SINGLE GATE | basic test for single gate 40x160 | NO | NO |
+| 50x160 SINGLE GATE | basic test for single gate 50x160 | NO | NO |
+| 60x160 SINGLE GATE | basic test for single gate 60x160 | NO | NO |
 
 ### Setup
 
@@ -90,12 +92,11 @@ In the example ino files. There are sections in "setup()" function
 where user can make adjustments.
 
 1. USER OPTION 1 GPIO, SPI Speed + type
-2. USER OPTION 2 Screen Size, Offsets, resolution, Gate type and Missing Pixel Fix. 
+2. USER OPTION 2 Screen Size, Offsets, resolution, Gate type and Missing Pixel Fix.
 
+#### User option 1
 
-*GPIO SPI SPEED*
-
-Two different constructors which one is called depends on 'bhardwareSPI', 
+Two different constructors which one is called depends on 'bhardwareSPI',
 true for hardware spi, false for software SPI.
 
 Hardware SPI:
@@ -111,42 +112,41 @@ Setting this higher can be used to slow down Software SPI
 which may be beneficial on Fast MCU's.
 The 5 GPIO pins used. Any GPIO can be used for these.
 
-*USER OPTIONS 2*
+#### User option 2
 
 There are options here user can adjust:
- 
-1. 2A screen pixel height 
-2. 2B screen pixel width 
-3. 2C Resolution and gate type. 
+
+1. 2A screen pixel height
+2. 2B screen pixel width
+3. 2C Resolution and gate type.
 4. 2D Pixel fix mode
-5. 2E screen pixel X offset
-6. 2F screen Pixel Y offset 
+5. 2E screen pixel X landscape offset, 90 and 270 rotations.
+6. 2F screen Pixel Y landscape offset, 90 and 270 rotations.
+7. 2G screen pixel X portrait offset, 0 and 180 rotations.
+8. 2H screen pixel Y portrait offset, 0 and 180 rotations.
 
+##### User option 2C Resolution
 
-*USER OPTION 2C- Resolution & Gate Configuration (Resolution_e)*
-
-The GC9D01 controller supports multiple display sizes and gate driving modes.  
-Select the correct enum value for your physical module.
-In addition to passing the parameter. User must also set a Macro in "user option section" at top 
-of GC9D01_LTSM.hpp , Dual gate mode is on by default.
+The GC9D01 controller supports multiple display sizes and gate driving modes.
+Select the correct enum value(see Resolution_e) for your physical module and pass as parameter.
+In addition to passing the parameter. User must also set a Macro in "Section User Options" at top
+of GC9D01_LTSM.hpp , Dual gate mode 160x160 is on by default.
 
 ```cpp
-//Choose ONE (comment out the other)
-#define DUAL_GATE_INIT_SEQUENCE_ON 1
-//#define SINGLE_GATE_INIT_SEQUENCE_ON 1
+// ========== Section User Options===========
+// Choose ONE and ONE ONLY (comment out the others)
+#define   GC9D01_DUAL_INIT 1  // 160x160 default
+//#define GC9D01_DUAL_INIT_120x160  1 // May not exist on market?
+//#define GC9D01_SINGLE_INIT_40x160 1
+//#define GC9D01_SINGLE_INIT_50x160 1
+//#define GC9D01_SINGLE_INIT_60x160 1
+//#define GC9D01_SINGLE_INIT_80x160 1  // May not exist on market?
+//  ========== End Section User Options===========
 ```
 
-| Enum Value             | Resolution | Gate Mode | Typical Module Description | 
-|------------------------|------------|-----------|---------------------------|
-| `RGB160x160_DualGate`  | 160×160  | Dual   | Most round GC9D01 displays **Default**|
-| `RGB120x160_DualGate`  | 120×160  | Dual   | Some rectangular / bar-type modules|
-| `RGB80x160_SingleGate` | 80×160   | Single | Smaller rectangular / bar displays |
-| `RGB40x160_SingleGate` | 40×160   | Single | Very narrow bar-type or specialty modules|
+##### User option 2D Pixel drawing workaround
 
-
-*USER OPTION 2D – Pixel drawing workaround (PixelFixMode_e)*
-
-Some GC9D01 modules may have a hardware quirk:  
+Some GC9D01 modules may have a hardware quirk:
 
 [![pic3 ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/pixel_error.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/pixel_error.jpg)
 
@@ -154,43 +154,45 @@ When developing library, It was discovered that when drawing pixel by pixel in v
 direction, some pixels went missing or changed color. The only solution I could find
 was to send the pixel twice for drawPixel() and for drawFastVLine() to disable "fast burst mode".
 
-Default mode: 
+Default mode:
 No problem with bitmaps or drawing text in local buffer mode(default).
 Problems occur with certain functions: like drawing text when in pixel mode,
 certain shapes + lines and sprites. This fix slows these functions down.
 
-Advanced buffer mode: No problems, this setting is ignored.
+Advanced buffer mode: No drawing problems in this mode., this setting is ignored.
 
-Behavior may depend on batch, display module, variant or manufacturer so 
-I made it optional to switch 'fix' off. 
+Behavior may depend on batch, display module, variant or manufacturer so
+I made it optional to switch 'fix' off.
 In the examples files it is set to default 'both'. See table for options
 
-| Mode    | Description   |Notes |
-|----------|----|--------|
-| Off    | Normal drawing (no workaround)  | Fastest, but may show gaps   |
-| DoublePixel | Double-pixel padding in `drawPixel()` | Fixes single pixels    |
-| VFastOff|Pixel-by-pixel only in `drawFastVLine()`| Forces slow vertical lines (no fast burst)|
-| Both    | Applies both fixes  | Default     |
+| Mode | Description | Notes |
+| --- | --- | --- |
+| Off | Normal drawing (no workaround) | Fastest, but may show gaps |
+| DoublePixel | Double-pixel padding in `drawPixel()` | Fixes single pixels |
+| VFastOff | Pixel-by-pixel only in `drawFastVLine()` | Forces slow vertical lines (no fast burst) |
+| Both | Applies both fixes | Default |
 
-*USER OPTION 2E and 2F*
+##### User option 2E-2H Offsets
 
-On some displays an offset is required, I made this a user input
-rather than hard-coded due to diversity of variant modules available.
+On some truncated displays offset's are required, As the active pixel area is a subset of the display
+controller video RAM.I made this a user input
+rather than hard-coded due to diversity of variant modules available, and known unknowns.
 
-| Display type              | X offset | Y offset | Notes |
-|---------------------------|----------|----------|-------|
-| `160x160 Dual Gate`       | 0        | 0        | Full GRAM exposed. No offsets required in any rotation. *Default* |
-| `120x160 Dual Gate`       | TBD      | TBD      | Expected to require centering offsets (~20 px) depending on rotation. Not hardware tested. |
-| `80x160 Single Gate`      | TBD      | TBD      | Expected to require centering offsets (~40 px) depending on rotation. Not hardware tested. |
-| `40x160 Single Gate`      | -60      | 60       | **Tested**. Offsets required for 90° and 270° rotations due to centered 40-pixel active area. |
-
+| Display type | offset | Notes |
+| --- | --- | --- |
+| 160x160 Dual Gate | 0,0,0,0 | Round display, Full GRAM exposed. No offsets required in any rotation. *Default* |
+| 120x160 Dual Gate | Unknown | Expected to require offsets (~20 px) depending on rotation. Not hardware tested |
+| 80x160 Single Gate | Unknown | Expected to require offsets (~40 px) depending on rotation. Not hardware tested |
+| 60x160 Single Gate | -40,50,10,0 | Offsets required in all rotation, tested by third party |
+| 50x160 Single Gate | -39,55,16,0 | Offsets required in all rotations ,Not hardware tested |
+| 40x160 Single Gate | -60,60,0,0 | Offsets required for 90° and 270° rotations due to centered 40-pixel active area. tested by third party |
 
 ## Hardware
 
 [![pic ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/gc2.jpg)
 
 Schematic of components on back of tested 160x160 module above.
- 
+
 [![sch ](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.png)](https://github.com/gavinlyonsrepo/GC9D01_LTSM/blob/main/extras/images/sch.jpg)
 
 Connections as setup in HELLO_WORLD.ino  test file.
@@ -198,16 +200,15 @@ Connections as setup in HELLO_WORLD.ino  test file.
 | TFT PinNum | Pindesc | Hardware SPI | Software SPI |
 | --- | --- | --- | --- |
 | 1 | GND | GND | GND |
-| 2 | VCC |  See notes below | <- |
-| 3 | SCLK | MCU SPI CLK | GPIO12 |
-| 4 | SDA | MCU MOSI | GPIO13 |
+| 2 | VCC | See notes below | <- |
+| 3 | SCLK | MCU SPI CLK | GPIO27 |
+| 4 | SDA | MCU MOSI | GPIO26 |
 | 5 | RESET | GPIO4 | GPIO4 |
 | 6 | DC | GPIO5 | GPIO5 |
 | 7 | CS | GPIO15 | GPIO15 |
 | 8 | LED | See notes below | <- |
 
-
-*Notes* 
+Notes:
 
 1. This is a 3.3V logic device do NOT connect the I/O logic lines to 5V logic device.
 2. *If* your module has a 3.3V regulator on board you can connect(VCC) to 5V.
@@ -217,9 +218,9 @@ Connections as setup in HELLO_WORLD.ino  test file.
 
 ## Tested
 
-* Tested on ESP32 , ONLY tested on 160x160 round display and 40x160 bar display(third party)
+* Tested on ESP32 , ONLY tested on 160x160 round display and 40x160 bar display + 60x160 bar display(third party)
 
-> Some examples on low-RAM MCUs will fail( insufficient memory ), if numerous fonts and excessive bitmap data are included.  
+> Some examples on low-RAM MCUs will fail( insufficient memory ), if numerous fonts and excessive bitmap data are included.
 > Advanced screen buffer mode requires sufficient dynamic memory for the buffer — see the README in display16_LTSM for details.
 > The Size of Frame buffer needed is: height by width by 2. So for 160x160 screen = 51,200 bytes or 40x160 = 12,800 bytes.
 

@@ -50,19 +50,21 @@ void setup(void) {
     myTFT.TFTsetupGPIO_SPI(TFT_SCLK_FREQ, RST_TFT, DC_TFT, CS_TFT);
   } else {                        // sw spi
     uint16_t SWSPICommDelay = 0;  // optional SW SPI GPIO delay in uS
-    int8_t SDIN_TFT = 13;
-    int8_t SCLK_TFT = 12;
+    int8_t SDIN_TFT = 26;
+    int8_t SCLK_TFT = 27;
     myTFT.TFTsetupGPIO_SPI(SWSPICommDelay, RST_TFT, DC_TFT, CS_TFT, SCLK_TFT, SDIN_TFT);
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
   uint16_t TFT_WIDTH = 160;   // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  uint16_t OFFSET_X = 0;  // Screen X offset in pixels
-  uint16_t OFFSET_Y = 0;  // Screen Y offset in pixels
-  // Display type, 4 choice,  see readme
+  uint16_t OFFSET_X_L = 0;  // Landscape Screen X offset in pixels
+  uint16_t OFFSET_Y_L = 0;  // Landscape Screen Y offset in pixels
+  uint16_t OFFSET_X_P = 0;  // Portrait Screen X offset in pixels
+  uint16_t OFFSET_Y_P = 0;  // Portrait Screen Y offset in pixels
+  // Display type, 6 choice,  see readme
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  // Pixel Draw mode type, 4 choices , see readme.  
+  // Pixel Draw mode type, 6 choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X, OFFSET_Y);
   // ===

@@ -1,16 +1,14 @@
 /*!
-	@file   40X160_SINGLE_GATE.ino
+	@file   50X160_SINGLE_GATE.ino
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library. Test: print "Hello World"
-          This example will test 40x160 single gate 
-	@note   See USER OPTIONS 1-2 in SETUP function, Default mode: no advanced buffer.
+          This example will test 50x160 single gate 
+	@note   See USER OPTIONS  in SETUP function, Default mode: no advanced buffer.
           Make sure to set relevant macro at top of 'GC9D01_LTSM.hpp', in 
-          'Section User Options'. GC9D01_SINGLE_INIT_40x160
-          This file is tested by third party
-  @details  We rotate the display 270 degrees and print 'Hello 270'
-            text is printed in text local buffer mode: default. 
+          'Section User Options'. GC9D01_SINGLE_INIT_50x160
+          This file is untested on hardware
 	@test
-		-# Test 106 Print out 'Hello 270'  at 270 degrees
+		-# Test 103 Print out 'Hi!'  
 */
 
 // libraries
@@ -49,35 +47,35 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  uint16_t TFT_WIDTH =   40;  // Screen width in pixels
+  uint16_t TFT_WIDTH =   50;  // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
-  uint16_t OFFSET_X_L = -60;  // Landscape Screen X offset in pixels
-  uint16_t OFFSET_Y_L =  60;  // Landscape Screen Y offset in pixels
-  uint16_t OFFSET_X_P =   0;  // Portrait Screen X offset in pixels
+  uint16_t OFFSET_X_L = -39;  // Landscape Screen X offset in pixels
+  uint16_t OFFSET_Y_L =  55;  // Landscape Screen Y offset in pixels
+  uint16_t OFFSET_X_P =  16;  // Portrait Screen X offset in pixels
   uint16_t OFFSET_Y_P =   0;  // Portrait Screen Y offset in pixels
   // Display type, 6 choice's, see readme.
-  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB40x160_SingleGate;
+  GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB50x160_SingleGate;
   // Pixel Draw mode type, 6 choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X_L, OFFSET_Y_L, OFFSET_X_P, OFFSET_Y_P);
   // ===
   myTFT.TFTGC9D01Initialize();
-  myTFT.TFTsetRotation(myTFT.Degrees_270);
+  myTFT.TFTsetRotation(myTFT.Degrees_0);
   Serial.println("Start");
 }
 
 // main
 void loop(void) {
-  Test100();
+  Test103();
   EndTests();
 }
 
-void Test100(void) {
+void Test103(void) {
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.setTextColor(myTFT.C_GREEN, myTFT.C_BLACK);
   myTFT.setFont(FontArialBold);
-  myTFT.setCursor(10, 10);
-  myTFT.print("Hello 270");
+  myTFT.setCursor(0, 0);
+  myTFT.print("Hi!");
   delay(TEST_DELAY5);
   delay(TEST_DELAY5);
   myTFT.fillScreen(myTFT.C_BLACK);

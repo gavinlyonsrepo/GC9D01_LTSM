@@ -47,15 +47,15 @@ void setup(void) {
   }
   // ===
   // === USER OPTION 2 Screen Setup ===
-  uint16_t TFT_WIDTH =   50;  // Screen width in pixels
+  uint16_t TFT_WIDTH = 50;    // Screen width in pixels
   uint16_t TFT_HEIGHT = 160;  // Screen height in pixels
   uint16_t OFFSET_X_L = -39;  // Landscape Screen X offset in pixels
-  uint16_t OFFSET_Y_L =  55;  // Landscape Screen Y offset in pixels
-  uint16_t OFFSET_X_P =  16;  // Portrait Screen X offset in pixels
-  uint16_t OFFSET_Y_P =   0;  // Portrait Screen Y offset in pixels
+  uint16_t OFFSET_Y_L = 55;   // Landscape Screen Y offset in pixels
+  uint16_t OFFSET_X_P = 16;   // Portrait Screen X offset in pixels
+  uint16_t OFFSET_Y_P = 0;    // Portrait Screen Y offset in pixels
   // Display type, 6 choice's, see readme.
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB50x160_SingleGate;
-  // Pixel Draw mode type, 6 choices , see readme.  
+  // Pixel Draw mode type, 6 choices , see readme.
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X_L, OFFSET_Y_L, OFFSET_X_P, OFFSET_Y_P);
   // ===

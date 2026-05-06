@@ -66,7 +66,7 @@ void setup(void) {
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
   // Pixel Draw mode type, 6 choices , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
-  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X, OFFSET_Y);
+  myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, OFFSET_X_L, OFFSET_Y_L, OFFSET_X_P, OFFSET_Y_P);
   // ===
   myTFT.TFTGC9D01Initialize();
   Serial.println("Start");

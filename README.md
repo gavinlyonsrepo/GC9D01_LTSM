@@ -9,6 +9,7 @@
 * [Dependency](#dependency)
 * [Documentation](#documentation)
 * [Software](#software)
+  * [Dependancy user options](#dependancy-user-options)
   * [Examples](#examples)
   * [Setup](#setup)
     * [User option 1](#user-option-1)
@@ -68,11 +69,24 @@ the dependency 'display16_LTSM' repository, [URL github link](https://github.com
 
 ## Software
 
+### Dependency user options
+
+There are options in the dependency 'display16_LTSM' library which can be set by the user. These are set in the 'display16_LTSM' library's 'display16_common_LTSM.hpp' file.
+These options are referenced in note section of example files table below.
+See dependency section of this readme for url link to display16_LTSM for more information on the options.
+The options are:
+
+| Option | Description | Default |
+| --- | --- | --- |
+| dislib16_ADVANCED_GRAPHICS_ENABLE | Enable advanced graphics functions | OFF |
+| dislib16_ADVANCED_SCREEN_BUFFER_ENABLE | Enable advanced screen buffer mode | OFF |
+| dislib16_DEBUG_MODE_ENABLE | Enable debug messages to serial console | OFF |
+
 ### Examples
 
 All examples are for dual gate 160x160, except last three.
 
-| Filename .ino | Function | Advanced Graphics mode | Advanced buffer mode |
+| Filename .ino | Function | Advanced Graphics mode | Advanced screen buffer mode |
 | --- | --- | --- | --- |
 | HELLO WORLD | Hello world | NO | NO |
 | TEXT | Fonts and text | NO | NO |

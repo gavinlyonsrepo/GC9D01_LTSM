@@ -3,17 +3,17 @@
 	@author Gavin Lyons
 	@brief  Example file for GC9D01_LTSM arduino library : Advanced Frame buffer mode
           See USER OPTIONS 0-2 in SETUP function
-            dislib16_ADVANCED_GRAPHICS_ENABLE and
             dislib16_ADVANCED_SCREEN_BUFFER_ENABLE must be enabled for this example
             or it will not compile. 
             These settings are in file :display16_common_LTSM.hpp
-            of graphics library. 
+            of graphics library, display16_LTSM. 
             Requires usable heap memory of (160x160x2) = 51,200 bytes for buffer
             This example is for 160x160 Dual gate.
 	@test
 		-# Test 1500 Color + text
     -# Test 1504 Lines + shapes
-    -# Test Bitmaps + rotate
+    -# Test 1505 Bitmaps 
+    -# Test 1506 Rotate
 
 */
 
@@ -66,10 +66,11 @@ void setup(void) {
   myTFT.TFTGC9D01Initialize();
 
   // set up buffer
-  if (myTFT.setBuffer() != DisLib16::Success){
-    Serial.println("buffer not set");
-    while(1){};
-  }
+  // Set rotation BEFORE setBuffer(): the buffer is laid out for the display's
+  // current width and height. On a display where width != height, call
+  // setBuffer() again after every rotation change.
+  myTFT.TFTsetRotation(myTFT.Degrees_0); // Degrees_0 is the default, shown for clarity
+  SetBuffer();
   // set to use pixel mode for text                 
   myTFT.setTextCharPixelOrBuffer(true); 
   Serial.println("Start");
@@ -84,11 +85,15 @@ void loop(void) {
   Test1503();
   Test1504();
   Test1505();
+  Test1506();
   EndTests();
 }
 // End OF MAIN 
 
 void EndTests(void) {
+  myTFT.print("end");
+  myTFT.writeBuffer();
+  delay(3000);
   myTFT.fillScreen(myTFT.C_BLACK);
   myTFT.clearBuffer(myTFT.C_BLACK);
   myTFT.destroyBuffer();
@@ -208,26 +213,33 @@ void Test1505(void)
   myTFT.drawSpriteData(90, 90, SpriteTest16, 32, 32, myTFT.C_LBLUE, true);
   myTFT.writeBuffer();
   delay(5000);
+  myTFT.clearBuffer();
 
-  myTFT.clearBuffer(myTFT.C_BLACK);
-  myTFT.writeBuffer();
-  myTFT.TFTsetRotation(myTFT.Degrees_90);
-  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
-  myTFT.writeBuffer();
-  delay(5000);
+}
 
-  myTFT.clearBuffer(myTFT.C_BLACK);
-  myTFT.writeBuffer();
-  myTFT.TFTsetRotation(myTFT.Degrees_180);
-  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
-  myTFT.writeBuffer();
-  delay(5000);
+void Test1506(void) {
+  Serial.println("Rotate");
+  const decltype(myTFT.Degrees_0) rotations[] = {
+    myTFT.Degrees_90,
+    myTFT.Degrees_180,
+    myTFT.Degrees_270,
+    myTFT.Degrees_0
+  };
+  for (int i = 0; i < 4; ++i) {
+    myTFT.TFTsetRotation(rotations[i]);
+    //SetBuffer(); // reset the buffer,  optional, reallocate, ONLY needed if width != height.
+    myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
+    myTFT.writeBuffer();
+    delay(5000);
+    myTFT.clearBuffer(); // not needed if resetting buffer
+  }
+}
 
-  myTFT.clearBuffer(myTFT.C_BLACK);
-  myTFT.writeBuffer();
-  myTFT.TFTsetRotation(myTFT.Degrees_270);
-  myTFT.drawBitmap16Data(40, 60, PosterImage, 80, 48);
-  myTFT.writeBuffer();
-  delay(5000);
+void SetBuffer(void)
+{
+    if (myTFT.setBuffer() != DisLib16::Success){
+      Serial.println("buffer not set");
+      while(1){};
+    }
 }
 /// @endcond

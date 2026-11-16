@@ -59,7 +59,7 @@ void setup(void) {
   uint16_t OFFSET_Y_P = 0;  // Portrait Screen Y offset in pixels
   // Display type, 6 choice's, see readme.
   GC9D01_LTSM::Resolution_e DisplayType = GC9D01_LTSM::Resolution_e::RGB160x160_DualGate;
-  // Pixel Draw mode type, 46choices , see readme.  
+  // Pixel Draw mode type, 4 choice's , see readme.  
   GC9D01_LTSM::PixelFixMode_e FixType = GC9D01_LTSM::PixelFixMode_e::Both;
   myTFT.TFTInitScreenSize(TFT_WIDTH, TFT_HEIGHT, DisplayType, FixType, 
   OFFSET_X_L, OFFSET_Y_L, OFFSET_X_P, OFFSET_Y_P);
@@ -83,9 +83,9 @@ void Test100(void) {
 
   // Switch to pixel by pixel mode test 
   //================
-  Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "0"
-  myTFT.setTextCharPixelOrBuffer(true);
-   Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "1"
+  Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "0", shows buffer mode on , default
+  myTFT.setTextCharPixelOrBuffer(true); // turn on pixel by pixel mode
+  Serial.println(myTFT.getTextCharPixelOrBuffer()); // print "1", shows pixel by pixel mode on
    //===================
   myTFT.setCursor(25, 80);
   myTFT.print("World");

@@ -509,11 +509,9 @@ void GC9D01_LTSM::drawPixel(uint16_t x, uint16_t y, uint16_t color)
 		if ((x >= _width) || (y >= _height))
 		return;
 #ifdef dislib16_ADVANCED_SCREEN_BUFFER_ENABLE
-	// Calculate the index in the buffer
-	size_t index = (y * _width + x) * 2; // 2 bytes per pixel for RGB565
-	// Write the color to the buffer
-	_screenBuffer[index] = (uint8_t)(color >> 8);     // High byte
-	_screenBuffer[index + 1] = (uint8_t)(color & 0xFF); // Low byte
+	// Buffer mode: the double-pixel fix only applies to direct SPI writes,
+	// so use the base class, which bounds-checks and writes to the screen buffer
+	display16_graphics_LTSM::drawPixel(x, y, color);
 #else
 	uint8_t high = color >> 8;
 	uint8_t low = color;

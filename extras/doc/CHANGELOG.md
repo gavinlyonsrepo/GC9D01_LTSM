@@ -22,3 +22,5 @@
 		   display16_LTSM dependency library, for details.
 		4. This change only effects users using frame buffer mode AND non-default rotation
 		AND on displays where width != height.
+* Version 1.1.2 11-2026
+	* minor update, correction to V1.1.1 in drawPixel() function for frame buffer mode. 
